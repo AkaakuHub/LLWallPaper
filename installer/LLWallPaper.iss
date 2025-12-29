@@ -96,6 +96,24 @@ begin
   end;
 end;
 
+function HasRuntimeValueAtLeast(const RootKey: Integer; const KeyPath: string; const Required: string): Boolean;
+var
+  Values: TArrayOfString;
+  I: Integer;
+begin
+  Result := False;
+  if not RegGetValueNames(RootKey, KeyPath, Values) then
+    Exit;
+  for I := 0 to GetArrayLength(Values) - 1 do
+  begin
+    if CompareVersion(Values[I], Required) >= 0 then
+    begin
+      Result := True;
+      Exit;
+    end;
+  end;
+end;
+
 function IsDesktopRuntime10Installed(): Boolean;
 var
   Required: string;
@@ -105,7 +123,9 @@ begin
     HasRuntimeAtLeast(HKLM64, 'SOFTWARE\dotnet\Setup\InstalledVersions\x64\sharedfx\Microsoft.WindowsDesktop.App', Required) or
     HasRuntimeAtLeast(HKLM64, 'SOFTWARE\WOW6432Node\dotnet\Setup\InstalledVersions\x64\sharedfx\Microsoft.WindowsDesktop.App', Required) or
     HasRuntimeAtLeast(HKLM32, 'SOFTWARE\dotnet\Setup\InstalledVersions\x86\sharedfx\Microsoft.WindowsDesktop.App', Required) or
-    HasRuntimeAtLeast(HKLM32, 'SOFTWARE\WOW6432Node\dotnet\Setup\InstalledVersions\x86\sharedfx\Microsoft.WindowsDesktop.App', Required);
+    HasRuntimeAtLeast(HKLM32, 'SOFTWARE\WOW6432Node\dotnet\Setup\InstalledVersions\x86\sharedfx\Microsoft.WindowsDesktop.App', Required) or
+    HasRuntimeValueAtLeast(HKLM64, 'SOFTWARE\WOW6432Node\dotnet\Setup\InstalledVersions\x64\sharedfx\Microsoft.WindowsDesktop.App', Required) or
+    HasRuntimeValueAtLeast(HKLM32, 'SOFTWARE\WOW6432Node\dotnet\Setup\InstalledVersions\x86\sharedfx\Microsoft.WindowsDesktop.App', Required);
 end;
 
 function InitializeSetup(): Boolean;
