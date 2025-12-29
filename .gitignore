@@ -47,3 +47,8 @@ local.settings.json
 # App data (runtime artifacts)
 **/AppData/
 
+# dotnet-format
+.dotnet/
+
+# lefthook local binary
+/tools/lefthook/

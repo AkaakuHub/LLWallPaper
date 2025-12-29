@@ -1,0 +1,11 @@
+lefthook: tools/lefthook/lefthook.exe
+
+pre-commit:
+  jobs:
+    - name: dotnet-format
+      run: dotnet tool run dotnet-format -- LLWallPaper.sln
+      stage_fixed: true
+
+    - name: dotnet-lint
+      run: dotnet build LLWallPaper.sln
+      stage_fixed: true
