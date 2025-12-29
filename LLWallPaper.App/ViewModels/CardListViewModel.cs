@@ -30,7 +30,7 @@ public sealed class CardListViewModel : ViewModelBase
         _settingsProvider = settingsProvider;
 
         Items = new ObservableCollection<CardItemViewModel>();
-        RefreshCommand = new AsyncRelayCommand(_ => RefreshAsync());
+        FetchCommand = new AsyncRelayCommand(_ => FetchAsync());
         ApplyCommand = new AsyncRelayCommand(_ => ApplySelectedAsync(), _ => SelectedItem is not null);
         ToggleFavoriteCommand = new RelayCommand(_ => ToggleFavorite(), _ => SelectedItem is not null);
         ToggleBlockedCommand = new RelayCommand(_ => ToggleBlocked(), _ => SelectedItem is not null);
@@ -74,17 +74,18 @@ public sealed class CardListViewModel : ViewModelBase
         set => SetProperty(ref _isBusy, value);
     }
 
-    public AsyncRelayCommand RefreshCommand { get; }
+    public AsyncRelayCommand FetchCommand { get; }
     public AsyncRelayCommand ApplyCommand { get; }
     public RelayCommand ToggleFavoriteCommand { get; }
     public RelayCommand ToggleBlockedCommand { get; }
 
-    public async Task RefreshAsync()
+    public async Task FetchAsync()
     {
         IsBusy = true;
         try
         {
             await _catalogService.RefreshAsync(CancellationToken.None);
+            ReloadItems();
             StatusMessage = $"Loaded {Items.Count} cards.";
         }
         finally

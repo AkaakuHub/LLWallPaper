@@ -84,7 +84,7 @@ public sealed class MainViewModel : ViewModelBase
     public async Task InitializeAsync()
     {
         _favoritesStore.Load();
-        await CardList.RefreshAsync();
+        await CardList.FetchAsync();
 
         if (_settings.RotateOnAppStart)
         {

@@ -66,7 +66,12 @@ public sealed class BackendApiClient : IBackendApiClient
                 continue;
             }
 
-            var id = idProp.GetString() ?? string.Empty;
+            var id = idProp.ValueKind switch
+            {
+                JsonValueKind.String => idProp.GetString() ?? string.Empty,
+                JsonValueKind.Number => idProp.GetRawText(),
+                _ => idProp.GetRawText()
+            };
             if (string.IsNullOrWhiteSpace(id))
             {
                 continue;

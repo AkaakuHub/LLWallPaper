@@ -103,10 +103,12 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBox Grid.Row="0" Grid.Column="0" Margin="0,0,8,8" Height="28"
-                             Text="{Binding CardList.SearchText, UpdateSourceTrigger=PropertyChanged}"/>
-                    <Button Grid.Row="0" Grid.Column="1" Content="Refresh" Width="96" Margin="0,0,0,8"
-                            Command="{Binding CardList.RefreshCommand}"/>
+                    <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="0,0,8,8">
+                        <TextBox Width="420" Height="28"
+                                 Text="{Binding CardList.SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
+                    <Button Grid.Row="0" Grid.Column="1" Content="Fetch" Width="96" Margin="0,0,0,8"
+                            Command="{Binding CardList.FetchCommand}"/>
 
                     <ListView Grid.Row="1" Grid.ColumnSpan="2" ItemsSource="{Binding CardList.Items}"
                               SelectedItem="{Binding CardList.SelectedItem}" Margin="0,0,0,8">
@@ -126,7 +128,8 @@
                         <Button Content="Toggle Blocked" Width="140" Command="{Binding CardList.ToggleBlockedCommand}"/>
                     </StackPanel>
 
-                    <TextBlock Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Text="{Binding CardList.StatusMessage}"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" VerticalAlignment="Center"
+                               Text="{Binding CardList.StatusMessage}"/>
                 </Grid>
             </TabItem>
         </TabControl>
