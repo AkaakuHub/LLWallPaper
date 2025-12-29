@@ -46,6 +46,6 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            LLWallPaper.App\bin\Release\net10.0-windows\win-x64\publish\LLWallPaper.App.exe
+            LLWallPaper.App/bin/Release/**/publish/*.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
