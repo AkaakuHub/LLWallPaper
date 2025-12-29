@@ -47,6 +47,3 @@ local.settings.json
 # App data (runtime artifacts)
 **/AppData/
 
-# LLWallPaper runtime cache/logs (if accidentally copied into repo)
-MoshiMoshi/
-

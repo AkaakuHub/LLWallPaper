@@ -9,7 +9,7 @@ public static class AppPaths
         get
         {
             var basePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            return Path.Combine(basePath, "MoshiMoshi", "WallpaperApp");
+            return Path.Combine(basePath, "AkaakuHub", "LLWallPaper");
         }
     }
 
