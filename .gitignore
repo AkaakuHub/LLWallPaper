@@ -1,0 +1,52 @@
+# Build outputs
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+*.vspscc
+*.vssscc
+
+# Visual Studio Code
+.vscode/
+
+# Rider
+.idea/
+*.sln.iml
+
+# .NET
+*.log
+*.nupkg
+*.snupkg
+*.nuspec
+*.pssym
+*.pdb
+*.cache
+*.tmp
+*.ilk
+*.meta
+*.resources
+
+# Test results
+TestResults/
+
+# NuGet
+packages/
+
+# OS
+Thumbs.db
+Desktop.ini
+
+# Optional local data
+local.settings.json
+
+# App data (runtime artifacts)
+**/AppData/
+
+# LLWallPaper runtime cache/logs (if accidentally copied into repo)
+MoshiMoshi/
+

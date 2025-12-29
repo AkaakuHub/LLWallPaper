@@ -1,0 +1,135 @@
+<Window x:Class="LLWallPaper.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="LLWallPaper" Height="720" Width="980"
+        MinHeight="540" MinWidth="840"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border BorderBrush="#DDDDDD" BorderThickness="1" Padding="12" CornerRadius="8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Vertical" Grid.Column="0">
+                    <TextBlock Text="Current Wallpaper" FontWeight="SemiBold"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                        <TextBlock Text="Name: " FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding CurrentCardName}"/>
+                        <TextBlock Text="   ID: " FontWeight="SemiBold" Margin="12,0,0,0"/>
+                        <TextBlock Text="{Binding CurrentCardId}"/>
+                        <TextBlock Text="   Source: " FontWeight="SemiBold" Margin="12,0,0,0"/>
+                        <TextBlock Text="{Binding CurrentSource}"/>
+                    </StackPanel>
+                    <TextBlock Text="{Binding StatusText}" Margin="0,8,0,0"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Button Content="Next" Width="96" Margin="0,0,8,0" Command="{Binding NextCommand}"/>
+                    <Button Content="Pause/Resume" Width="120" Command="{Binding ToggleAutoCommand}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <TabControl Grid.Row="1" Margin="0,16,0,0">
+            <TabItem Header="Settings">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Grid Margin="12">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="Backend" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Base URL" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Settings.BackendBaseUrl, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Text="Auto Rotate" FontWeight="SemiBold" Margin="0,16,0,8"/>
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Auto Rotate Enabled" VerticalAlignment="Center"/>
+                        <CheckBox Grid.Row="3" Grid.Column="1" IsChecked="{Binding Settings.AutoRotateEnabled}"/>
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Interval (minutes)" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Settings.RotateIntervalMinutes}"/>
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Rotate on App Start" VerticalAlignment="Center"/>
+                        <CheckBox Grid.Row="5" Grid.Column="1" IsChecked="{Binding Settings.RotateOnAppStart}"/>
+
+                        <TextBlock Grid.Row="6" Grid.ColumnSpan="2" Text="Random Rules" FontWeight="SemiBold" Margin="0,16,0,8"/>
+                        <TextBlock Grid.Row="7" Grid.Column="0" Text="Recent Exclude Count" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding Settings.RecentExcludeCount}"/>
+                        <TextBlock Grid.Row="8" Grid.Column="0" Text="Prefer Favorites" VerticalAlignment="Center"/>
+                        <CheckBox Grid.Row="8" Grid.Column="1" IsChecked="{Binding Settings.PreferFavorites}"/>
+                        <TextBlock Grid.Row="9" Grid.Column="0" Text="Exclude Blocked" VerticalAlignment="Center"/>
+                        <CheckBox Grid.Row="9" Grid.Column="1" IsChecked="{Binding Settings.ExcludeBlocked}"/>
+
+                        <TextBlock Grid.Row="10" Grid.ColumnSpan="2" Text="Cache" FontWeight="SemiBold" Margin="0,16,0,8"/>
+                        <TextBlock Grid.Row="11" Grid.Column="0" Text="Cache Max (MB)" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="11" Grid.Column="1" Text="{Binding Settings.CacheMaxMb}"/>
+
+                        <Button Grid.Row="12" Grid.Column="1" Content="Save Settings" Width="140" Margin="0,20,0,0"
+                                HorizontalAlignment="Left" Command="{Binding Settings.SaveCommand}"/>
+                    </Grid>
+                </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Cards">
+                <Grid Margin="12">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox Grid.Row="0" Grid.Column="0" Margin="0,0,8,8" Height="28"
+                             Text="{Binding CardList.SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Button Grid.Row="0" Grid.Column="1" Content="Refresh" Width="96" Margin="0,0,0,8"
+                            Command="{Binding CardList.RefreshCommand}"/>
+
+                    <ListView Grid.Row="1" Grid.ColumnSpan="2" ItemsSource="{Binding CardList.Items}"
+                              SelectedItem="{Binding CardList.SelectedItem}" Margin="0,0,0,8">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="ID" Width="200" DisplayMemberBinding="{Binding Id}"/>
+                                <GridViewColumn Header="Name" Width="280" DisplayMemberBinding="{Binding Name}"/>
+                                <GridViewColumn Header="Favorite" Width="80" DisplayMemberBinding="{Binding IsFavorite}"/>
+                                <GridViewColumn Header="Blocked" Width="80" DisplayMemberBinding="{Binding IsBlocked}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+
+                    <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal">
+                        <Button Content="Apply" Width="96" Margin="0,0,8,0" Command="{Binding CardList.ApplyCommand}"/>
+                        <Button Content="Toggle Favorite" Width="140" Margin="0,0,8,0" Command="{Binding CardList.ToggleFavoriteCommand}"/>
+                        <Button Content="Toggle Blocked" Width="140" Command="{Binding CardList.ToggleBlockedCommand}"/>
+                    </StackPanel>
+
+                    <TextBlock Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Text="{Binding CardList.StatusMessage}"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
+
