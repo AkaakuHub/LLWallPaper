@@ -25,3 +25,37 @@ Name: "desktopicon"; Description: "Create a &desktop icon"; GroupDescription: "A
 
 [Run]
 Filename: "{app}\LLWallPaper.App.exe"; Description: "Launch LLWallPaper"; Flags: nowait postinstall skipifsilent
+
+[Code]
+function IsDesktopRuntime10Installed(): Boolean;
+var
+  Version: string;
+begin
+  Result := RegQueryStringValue(
+    HKLM64,
+    'SOFTWARE\dotnet\Setup\InstalledVersions\x64\sharedfx\Microsoft.WindowsDesktop.App',
+    'Version',
+    Version
+  );
+end;
+
+function InitializeSetup(): Boolean;
+begin
+  if IsDesktopRuntime10Installed() then
+  begin
+    Result := True;
+  end
+  else
+  begin
+    MsgBox(
+      '.NET Desktop Runtime 10 is required to run LLWallPaper.'#13#10 +
+      'Please install it and then run this installer again.',
+      mbInformation,
+      MB_OK
+    );
+    ShellExec('open',
+      'https://dotnet.microsoft.com/en-us/download/dotnet/10.0',
+      '', '', SW_SHOWNORMAL, ewNoWait, Result);
+    Result := False;
+  end;
+end;

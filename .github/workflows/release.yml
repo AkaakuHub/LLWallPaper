@@ -47,7 +47,9 @@ jobs:
         run: choco install innosetup --no-progress -y
 
       - name: Build installer (Inno Setup)
-        run: '& \"C:\\Program Files (x86)\\Inno Setup 6\\iscc.exe\" \"installer\\LLWallPaper.iss\"'
+        shell: pwsh
+        run: |
+          & 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' 'installer\LLWallPaper.iss'
 
       - name: Create GitHub Release (attach zip + installer)
         uses: softprops/action-gh-release@v1
