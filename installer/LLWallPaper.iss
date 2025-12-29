@@ -40,6 +40,8 @@ begin
 end;
 
 function InitializeSetup(): Boolean;
+var
+  ResultCode: Integer;
 begin
   if IsDesktopRuntime10Installed() then
   begin
@@ -55,7 +57,7 @@ begin
     );
     ShellExec('open',
       'https://dotnet.microsoft.com/en-us/download/dotnet/10.0',
-      '', '', SW_SHOWNORMAL, ewNoWait, Result);
+      '', '', SW_SHOWNORMAL, ewNoWait, ResultCode);
     Result := False;
   end;
 end;
