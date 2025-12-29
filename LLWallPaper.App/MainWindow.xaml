@@ -63,19 +63,22 @@
 
                         <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="Backend" FontWeight="SemiBold" Margin="0,0,0,8"/>
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="Base URL" VerticalAlignment="Center"/>
-                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Settings.BackendBaseUrl, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" Width="420" HorizontalAlignment="Left"
+                                 Text="{Binding Settings.BackendBaseUrl, UpdateSourceTrigger=PropertyChanged}"/>
 
                         <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Text="Auto Rotate" FontWeight="SemiBold" Margin="0,16,0,8"/>
                         <TextBlock Grid.Row="3" Grid.Column="0" Text="Auto Rotate Enabled" VerticalAlignment="Center"/>
                         <CheckBox Grid.Row="3" Grid.Column="1" IsChecked="{Binding Settings.AutoRotateEnabled}"/>
                         <TextBlock Grid.Row="4" Grid.Column="0" Text="Interval (minutes)" VerticalAlignment="Center"/>
-                        <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Settings.RotateIntervalMinutes}"/>
+                        <TextBox Grid.Row="4" Grid.Column="1" Width="160" HorizontalAlignment="Left"
+                                 Text="{Binding Settings.RotateIntervalMinutes}"/>
                         <TextBlock Grid.Row="5" Grid.Column="0" Text="Rotate on App Start" VerticalAlignment="Center"/>
                         <CheckBox Grid.Row="5" Grid.Column="1" IsChecked="{Binding Settings.RotateOnAppStart}"/>
 
                         <TextBlock Grid.Row="6" Grid.ColumnSpan="2" Text="Random Rules" FontWeight="SemiBold" Margin="0,16,0,8"/>
                         <TextBlock Grid.Row="7" Grid.Column="0" Text="Recent Exclude Count" VerticalAlignment="Center"/>
-                        <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding Settings.RecentExcludeCount}"/>
+                        <TextBox Grid.Row="7" Grid.Column="1" Width="160" HorizontalAlignment="Left"
+                                 Text="{Binding Settings.RecentExcludeCount}"/>
                         <TextBlock Grid.Row="8" Grid.Column="0" Text="Prefer Favorites" VerticalAlignment="Center"/>
                         <CheckBox Grid.Row="8" Grid.Column="1" IsChecked="{Binding Settings.PreferFavorites}"/>
                         <TextBlock Grid.Row="9" Grid.Column="0" Text="Exclude Blocked" VerticalAlignment="Center"/>
@@ -83,7 +86,8 @@
 
                         <TextBlock Grid.Row="10" Grid.ColumnSpan="2" Text="Cache" FontWeight="SemiBold" Margin="0,16,0,8"/>
                         <TextBlock Grid.Row="11" Grid.Column="0" Text="Cache Max (MB)" VerticalAlignment="Center"/>
-                        <TextBox Grid.Row="11" Grid.Column="1" Text="{Binding Settings.CacheMaxMb}"/>
+                        <TextBox Grid.Row="11" Grid.Column="1" Width="160" HorizontalAlignment="Left"
+                                 Text="{Binding Settings.CacheMaxMb}"/>
 
                         <Button Grid.Row="12" Grid.Column="1" Content="Save Settings" Width="140" Margin="0,20,0,0"
                                 HorizontalAlignment="Left" Command="{Binding Settings.SaveCommand}"/>
@@ -104,7 +108,7 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="0,0,8,8">
-                        <TextBox Width="420" Height="28"
+                        <TextBox Width="420" Height="20"
                                  Text="{Binding CardList.SearchText, UpdateSourceTrigger=PropertyChanged}"/>
                     </StackPanel>
                     <Button Grid.Row="0" Grid.Column="1" Content="Fetch" Width="96" Margin="0,0,0,8"
@@ -135,4 +139,3 @@
         </TabControl>
     </Grid>
 </Window>
-
