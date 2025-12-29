@@ -3,9 +3,11 @@ lefthook: tools/lefthook/lefthook.exe
 pre-commit:
   jobs:
     - name: dotnet-format
+      glob: "**/*.cs"
       run: dotnet tool run dotnet-format -- LLWallPaper.sln
       stage_fixed: true
 
     - name: dotnet-lint
+      glob: "**/*.cs"
       run: dotnet build LLWallPaper.sln
       stage_fixed: true
