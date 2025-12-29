@@ -55,6 +55,7 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="220"/>
@@ -83,13 +84,15 @@
                         <CheckBox Grid.Row="8" Grid.Column="1" IsChecked="{Binding Settings.PreferFavorites}"/>
                         <TextBlock Grid.Row="9" Grid.Column="0" Text="Exclude Blocked" VerticalAlignment="Center"/>
                         <CheckBox Grid.Row="9" Grid.Column="1" IsChecked="{Binding Settings.ExcludeBlocked}"/>
+                        <TextBlock Grid.Row="10" Grid.Column="0" Text="Exclude duplicated 3rd evolution" VerticalAlignment="Center"/>
+                        <CheckBox Grid.Row="10" Grid.Column="1" IsChecked="{Binding Settings.ExcludeThirdEvolution}"/>
 
-                        <TextBlock Grid.Row="10" Grid.ColumnSpan="2" Text="Cache" FontWeight="SemiBold" Margin="0,16,0,8"/>
-                        <TextBlock Grid.Row="11" Grid.Column="0" Text="Cache Max (MB)" VerticalAlignment="Center"/>
-                        <TextBox Grid.Row="11" Grid.Column="1" Width="160" HorizontalAlignment="Left"
+                        <TextBlock Grid.Row="11" Grid.ColumnSpan="2" Text="Cache" FontWeight="SemiBold" Margin="0,16,0,8"/>
+                        <TextBlock Grid.Row="12" Grid.Column="0" Text="Cache Max (MB)" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="12" Grid.Column="1" Width="160" HorizontalAlignment="Left"
                                  Text="{Binding Settings.CacheMaxMb}"/>
 
-                        <Button Grid.Row="12" Grid.Column="1" Content="Save Settings" Width="140" Margin="0,20,0,0"
+                        <Button Grid.Row="13" Grid.Column="1" Content="Save Settings" Width="140" Margin="0,20,0,0"
                                 HorizontalAlignment="Left" Command="{Binding Settings.SaveCommand}"/>
                     </Grid>
                 </ScrollViewer>

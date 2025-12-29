@@ -8,12 +8,17 @@ public sealed class RotationService
 
     public CardItem? PickNext(IReadOnlyList<CardItem> candidates, IReadOnlyCollection<string> recentKeys,
         IReadOnlyCollection<string> favoriteKeys, IReadOnlyCollection<string> blockedKeys,
-        bool preferFavorites, bool excludeBlocked)
+        bool preferFavorites, bool excludeBlocked, bool excludeThirdEvolution)
     {
         IEnumerable<CardItem> pool = candidates;
         if (excludeBlocked && blockedKeys.Count > 0)
         {
             pool = pool.Where(card => !blockedKeys.Contains(card.Id));
+        }
+
+        if (excludeThirdEvolution)
+        {
+            pool = pool.Where(card => !card.Id.EndsWith("2", StringComparison.Ordinal));
         }
 
         if (recentKeys.Count > 0)

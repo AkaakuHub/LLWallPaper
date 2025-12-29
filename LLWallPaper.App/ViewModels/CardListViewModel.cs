@@ -131,6 +131,11 @@ public sealed class CardListViewModel : ViewModelBase
     private void ReloadItems()
     {
         var cards = _catalogService.Search(SearchText);
+        var settings = _settingsProvider();
+        if (settings.ExcludeThirdEvolution)
+        {
+            cards = cards.Where(card => !card.Id.EndsWith("2", StringComparison.Ordinal)).ToList();
+        }
         Items.Clear();
         foreach (var card in cards)
         {

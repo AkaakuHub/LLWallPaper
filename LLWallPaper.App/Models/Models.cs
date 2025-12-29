@@ -33,6 +33,9 @@ public sealed class Settings
     [JsonPropertyName("excludeBlocked")]
     public bool ExcludeBlocked { get; set; } = true;
 
+    [JsonPropertyName("excludeThirdEvolution")]
+    public bool ExcludeThirdEvolution { get; set; } = false;
+
     [JsonPropertyName("cacheMaxMb")]
     public int CacheMaxMb { get; set; } = 2048;
 }

@@ -49,7 +49,8 @@ public sealed class WallpaperUseCase
             _favoritesStore.FavoriteKeys,
             _favoritesStore.BlockedKeys,
             settings.PreferFavorites,
-            settings.ExcludeBlocked);
+            settings.ExcludeBlocked,
+            settings.ExcludeThirdEvolution);
 
         if (card is null)
         {

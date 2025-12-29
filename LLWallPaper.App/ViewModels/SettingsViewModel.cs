@@ -110,6 +110,19 @@ public sealed class SettingsViewModel : ViewModelBase
         }
     }
 
+    public bool ExcludeThirdEvolution
+    {
+        get => _settings.ExcludeThirdEvolution;
+        set
+        {
+            if (_settings.ExcludeThirdEvolution != value)
+            {
+                _settings.ExcludeThirdEvolution = value;
+                RaisePropertyChanged();
+            }
+        }
+    }
+
     public int CacheMaxMb
     {
         get => _settings.CacheMaxMb;
