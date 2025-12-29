@@ -7,14 +7,14 @@ DefaultDirName={autopf}\LLWallPaper
 DefaultGroupName=LLWallPaper
 DisableProgramGroupPage=yes
 OutputBaseFilename=LLWallPaper-Installer
-OutputDir=installer\Output
+OutputDir=Output
 Compression=lzma
 SolidCompression=yes
-SetupIconFile=installer\icon\llwallpaper.ico
+SetupIconFile=icon\llwallpaper.ico
 UninstallDisplayIcon={app}\LLWallPaper.App.exe
 
 [Files]
-Source: "LLWallPaper.App\bin\Release\net10.0-windows\win-x64\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\LLWallPaper.App\bin\Release\net10.0-windows\win-x64\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{autoprograms}\LLWallPaper"; Filename: "{app}\LLWallPaper.App.exe"
