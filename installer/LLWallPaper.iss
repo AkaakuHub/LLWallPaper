@@ -27,16 +27,85 @@ Name: "desktopicon"; Description: "Create a &desktop icon"; GroupDescription: "A
 Filename: "{app}\LLWallPaper.App.exe"; Description: "Launch LLWallPaper"; Flags: nowait postinstall skipifsilent
 
 [Code]
+function GetVersionPart(const Version: string; Index: Integer): Integer;
+var
+  I: Integer;
+  PartIndex: Integer;
+  Num: string;
+begin
+  PartIndex := 1;
+  Num := '';
+  for I := 1 to Length(Version) do
+  begin
+    if Version[I] = '.' then
+    begin
+      if PartIndex = Index then
+        Break;
+      PartIndex := PartIndex + 1;
+      Num := '';
+      Continue;
+    end;
+    if PartIndex = Index then
+    begin
+      if (Version[I] >= '0') and (Version[I] <= '9') then
+        Num := Num + Version[I];
+    end;
+  end;
+  Result := StrToIntDef(Num, 0);
+end;
+
+function CompareVersion(const A, B: string): Integer;
+var
+  I: Integer;
+  PartA: Integer;
+  PartB: Integer;
+begin
+  Result := 0;
+  for I := 1 to 4 do
+  begin
+    PartA := GetVersionPart(A, I);
+    PartB := GetVersionPart(B, I);
+    if PartA < PartB then
+    begin
+      Result := -1;
+      Exit;
+    end;
+    if PartA > PartB then
+    begin
+      Result := 1;
+      Exit;
+    end;
+  end;
+end;
+
+function HasRuntimeAtLeast(const RootKey: Integer; const KeyPath: string; const Required: string): Boolean;
+var
+  Subkeys: TArrayOfString;
+  I: Integer;
+begin
+  Result := False;
+  if not RegGetSubkeyNames(RootKey, KeyPath, Subkeys) then
+    Exit;
+  for I := 0 to GetArrayLength(Subkeys) - 1 do
+  begin
+    if CompareVersion(Subkeys[I], Required) >= 0 then
+    begin
+      Result := True;
+      Exit;
+    end;
+  end;
+end;
+
 function IsDesktopRuntime10Installed(): Boolean;
 var
-  Version: string;
+  Required: string;
 begin
-  Result := RegQueryStringValue(
-    HKLM64,
-    'SOFTWARE\dotnet\Setup\InstalledVersions\x64\sharedfx\Microsoft.WindowsDesktop.App',
-    'Version',
-    Version
-  );
+  Required := '10.0.0';
+  Result :=
+    HasRuntimeAtLeast(HKLM64, 'SOFTWARE\dotnet\Setup\InstalledVersions\x64\sharedfx\Microsoft.WindowsDesktop.App', Required) or
+    HasRuntimeAtLeast(HKLM64, 'SOFTWARE\WOW6432Node\dotnet\Setup\InstalledVersions\x64\sharedfx\Microsoft.WindowsDesktop.App', Required) or
+    HasRuntimeAtLeast(HKLM32, 'SOFTWARE\dotnet\Setup\InstalledVersions\x86\sharedfx\Microsoft.WindowsDesktop.App', Required) or
+    HasRuntimeAtLeast(HKLM32, 'SOFTWARE\WOW6432Node\dotnet\Setup\InstalledVersions\x86\sharedfx\Microsoft.WindowsDesktop.App', Required);
 end;
 
 function InitializeSetup(): Boolean;
