@@ -9,13 +9,15 @@ public sealed class SettingsViewModel : ViewModelBase
 {
     private readonly SettingsStore _settingsStore;
     private readonly WallpaperScheduler _scheduler;
+    private readonly StartupRegistryService _startupRegistryService;
     private readonly Settings _settings;
 
-    public SettingsViewModel(Settings settings, SettingsStore settingsStore, WallpaperScheduler scheduler)
+    public SettingsViewModel(Settings settings, SettingsStore settingsStore, WallpaperScheduler scheduler, StartupRegistryService startupRegistryService)
     {
         _settings = settings;
         _settingsStore = settingsStore;
         _scheduler = scheduler;
+        _startupRegistryService = startupRegistryService;
         SaveCommand = new RelayCommand(_ => Save());
     }
 
@@ -123,6 +125,32 @@ public sealed class SettingsViewModel : ViewModelBase
         }
     }
 
+    public bool StartWithWindows
+    {
+        get => _settings.StartWithWindows;
+        set
+        {
+            if (_settings.StartWithWindows != value)
+            {
+                _settings.StartWithWindows = value;
+                RaisePropertyChanged();
+            }
+        }
+    }
+
+    public bool StartMinimized
+    {
+        get => _settings.StartMinimized;
+        set
+        {
+            if (_settings.StartMinimized != value)
+            {
+                _settings.StartMinimized = value;
+                RaisePropertyChanged();
+            }
+        }
+    }
+
     public int CacheMaxMb
     {
         get => _settings.CacheMaxMb;
@@ -142,6 +170,15 @@ public sealed class SettingsViewModel : ViewModelBase
     {
         _settingsStore.Save(_settings);
         System.Windows.MessageBox.Show("Settings saved.", "LLWallPaper");
+        var exePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+        if (_settings.StartWithWindows)
+        {
+            _startupRegistryService.Enable(exePath);
+        }
+        else
+        {
+            _startupRegistryService.Disable();
+        }
         if (_settings.AutoRotateEnabled)
         {
             if (!_scheduler.IsRunning)

@@ -36,6 +36,12 @@ public sealed class Settings
     [JsonPropertyName("excludeThirdEvolution")]
     public bool ExcludeThirdEvolution { get; set; } = false;
 
+    [JsonPropertyName("startWithWindows")]
+    public bool StartWithWindows { get; set; } = false;
+
+    [JsonPropertyName("startMinimized")]
+    public bool StartMinimized { get; set; } = false;
+
     [JsonPropertyName("cacheMaxMb")]
     public int CacheMaxMb { get; set; } = 2048;
 }

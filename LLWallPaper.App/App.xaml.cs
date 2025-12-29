@@ -65,12 +65,23 @@ public partial class App : System.Windows.Application
             var desktopAdapter = DesktopWallpaperAdapter.TryCreate(logger);
             var wallpaperUseCase = new WallpaperUseCase(catalogService, rotationService, cacheStore, desktopAdapter, favoritesStore, historyStore, logger);
             var scheduler = new WallpaperScheduler(wallpaperUseCase, () => settings, logger);
+            var startupRegistryService = new StartupRegistryService();
 
-            var settingsViewModel = new SettingsViewModel(settings, settingsStore, scheduler);
+            var settingsViewModel = new SettingsViewModel(settings, settingsStore, scheduler, startupRegistryService);
             var cardListViewModel = new CardListViewModel(catalogService, favoritesStore, wallpaperUseCase, () => settings);
             var mainViewModel = new MainViewModel(settings, settingsStore, favoritesStore, wallpaperUseCase, scheduler, cardListViewModel, settingsViewModel, logger);
 
             _mainViewModel = mainViewModel;
+
+            if (settings.StartWithWindows)
+            {
+                var exePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+                startupRegistryService.Enable(exePath);
+            }
+            else
+            {
+                startupRegistryService.Disable();
+            }
 
             _mainWindow = new MainWindow
             {
@@ -78,7 +89,15 @@ public partial class App : System.Windows.Application
             };
             MainWindow = _mainWindow;
             _mainWindow.Closing += OnMainWindowClosing;
-            _mainWindow.Show();
+            if (settings.StartMinimized)
+            {
+                _mainWindow.WindowState = WindowState.Minimized;
+                _mainWindow.Hide();
+            }
+            else
+            {
+                _mainWindow.Show();
+            }
 
             InitializeTrayIcon();
 
