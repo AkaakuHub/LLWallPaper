@@ -29,16 +29,27 @@ jobs:
       - name: Restore
         run: dotnet restore LLWallPaper.sln
 
-      - name: Publish (single file)
+      - name: Publish (framework-dependent)
         run: >-
           dotnet publish .\LLWallPaper.App\LLWallPaper.App.csproj
           -c Release
           -r win-x64
           --self-contained false
-          -p:PublishSingleFile=true
-          -p:IncludeNativeLibrariesForSelfExtract=true
 
-      - name: Create GitHub Release (attach exe)
+      - name: Create zip
+        shell: pwsh
+        run: |
+          $publish = 'LLWallPaper.App\bin\Release\net10.0-windows\win-x64\publish'
+          if (Test-Path 'LLWallPaper.zip') { Remove-Item 'LLWallPaper.zip' }
+          Compress-Archive -Path "$publish\*" -DestinationPath 'LLWallPaper.zip'
+
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
+
+      - name: Build installer (Inno Setup)
+        run: '& \"C:\\Program Files (x86)\\Inno Setup 6\\iscc.exe\" \"installer\\LLWallPaper.iss\"'
+
+      - name: Create GitHub Release (attach zip + installer)
         uses: softprops/action-gh-release@v1
         with:
           name: ${{ github.ref_name }}
@@ -46,6 +57,7 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            LLWallPaper.App/bin/Release/**/publish/*.exe
+            LLWallPaper.zip
+            installer/Output/LLWallPaper-Installer.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,4 +1,5 @@
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using LLWallPaper.App.Models;
@@ -135,9 +136,12 @@ public partial class App : System.Windows.Application
         menu.Items.Add(new WinForms.ToolStripSeparator());
         menu.Items.Add(exitItem);
 
+        var exePath = Assembly.GetExecutingAssembly().Location;
+        var appIcon = System.Drawing.Icon.ExtractAssociatedIcon(exePath);
+
         _notifyIcon = new WinForms.NotifyIcon
         {
-            Icon = System.Drawing.SystemIcons.Application,
+            Icon = appIcon ?? System.Drawing.SystemIcons.Application,
             Visible = true,
             Text = "LLWallPaper"
         };
