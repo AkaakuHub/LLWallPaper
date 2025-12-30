@@ -8,6 +8,9 @@ namespace LLWallPaper.App.ViewModels;
 
 public sealed class CardListViewModel : ViewModelBase
 {
+    private const int RetryDelaySeconds = 30;
+    private const int StartupMaxAttempts = 5;
+
     private readonly CardCatalogService _catalogService;
     private readonly FavoritesStore _favoritesStore;
     private readonly WallpaperUseCase _wallpaperUseCase;
@@ -30,7 +33,7 @@ public sealed class CardListViewModel : ViewModelBase
         _settingsProvider = settingsProvider;
 
         Items = new ObservableCollection<CardItemViewModel>();
-        FetchCommand = new AsyncRelayCommand(_ => FetchAsync());
+        FetchCommand = new AsyncRelayCommand(_ => FetchWithRetryAsync());
         ApplyCommand = new AsyncRelayCommand(_ => ApplySelectedAsync(), _ => SelectedItem is not null);
         ToggleFavoriteCommand = new RelayCommand(_ => ToggleFavorite(), _ => SelectedItem is not null);
         ToggleBlockedCommand = new RelayCommand(_ => ToggleBlocked(), _ => SelectedItem is not null);
@@ -79,7 +82,35 @@ public sealed class CardListViewModel : ViewModelBase
     public RelayCommand ToggleFavoriteCommand { get; }
     public RelayCommand ToggleBlockedCommand { get; }
 
-    public async Task FetchAsync()
+    public async Task FetchWithRetryAsync(int initialDelaySeconds = 0)
+    {
+        if (initialDelaySeconds > 0)
+        {
+            StatusMessage = "Waiting for backend...";
+            await Task.Delay(TimeSpan.FromSeconds(initialDelaySeconds));
+        }
+
+        var attempts = 0;
+        while (true)
+        {
+            attempts++;
+            if (await FetchOnceAsync())
+            {
+                return;
+            }
+
+            if (attempts >= StartupMaxAttempts)
+            {
+                StatusMessage = $"Failed to connect after {StartupMaxAttempts} attempts.";
+                return;
+            }
+
+            StatusMessage = $"Fetch failed. Retrying ({attempts}/{StartupMaxAttempts})...";
+            await Task.Delay(TimeSpan.FromSeconds(RetryDelaySeconds));
+        }
+    }
+
+    private async Task<bool> FetchOnceAsync()
     {
         IsBusy = true;
         try
@@ -87,6 +118,12 @@ public sealed class CardListViewModel : ViewModelBase
             await _catalogService.RefreshAsync(CancellationToken.None);
             ReloadItems();
             StatusMessage = $"Loaded {Items.Count} cards.";
+            return true;
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Fetch failed: {ex.Message}";
+            return false;
         }
         finally
         {
