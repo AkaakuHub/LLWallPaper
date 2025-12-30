@@ -35,6 +35,14 @@ jobs:
           -c Release
           -r win-x64
           --self-contained false
+          -p:DebugType=none
+          -p:DebugSymbols=false
+
+      - name: Remove PDBs
+        shell: pwsh
+        run: |
+          $publish = 'LLWallPaper.App\bin\Release\net10.0-windows\win-x64\publish'
+          Get-ChildItem -Path $publish -Filter *.pdb -Recurse | Remove-Item -Force
 
       - name: Create zip
         shell: pwsh

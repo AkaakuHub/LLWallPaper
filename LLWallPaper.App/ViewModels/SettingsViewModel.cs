@@ -170,7 +170,7 @@ public sealed class SettingsViewModel : ViewModelBase
     {
         _settingsStore.Save(_settings);
         System.Windows.MessageBox.Show("Settings saved.", "LLWallPaper");
-        var exePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+        var exePath = _startupRegistryService.ResolveExecutablePath();
         if (_settings.StartWithWindows)
         {
             _startupRegistryService.Enable(exePath);
@@ -196,4 +196,3 @@ public sealed class SettingsViewModel : ViewModelBase
         }
     }
 }
-

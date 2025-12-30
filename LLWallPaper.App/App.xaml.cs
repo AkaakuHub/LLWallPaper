@@ -75,7 +75,7 @@ public partial class App : System.Windows.Application
 
             if (settings.StartWithWindows)
             {
-                var exePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+                var exePath = startupRegistryService.ResolveExecutablePath();
                 startupRegistryService.Enable(exePath);
             }
             else
@@ -155,7 +155,7 @@ public partial class App : System.Windows.Application
         menu.Items.Add(new WinForms.ToolStripSeparator());
         menu.Items.Add(exitItem);
 
-        var exePath = Assembly.GetExecutingAssembly().Location;
+        var exePath = new StartupRegistryService().ResolveExecutablePath();
         var appIcon = System.Drawing.Icon.ExtractAssociatedIcon(exePath);
 
         _notifyIcon = new WinForms.NotifyIcon
@@ -187,4 +187,3 @@ public partial class App : System.Windows.Application
         Shutdown();
     }
 }
-
