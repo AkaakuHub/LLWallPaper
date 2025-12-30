@@ -63,14 +63,30 @@
                     <Button Grid.Row="0" Grid.Column="1" Content="Fetch" Width="96" Margin="0,0,0,8"
                             Command="{Binding CardList.FetchCommand}"/>
 
-                    <ListView Grid.Row="1" Grid.ColumnSpan="2" ItemsSource="{Binding CardList.Items}"
+                    <ListView x:Name="CardListView" Grid.Row="1" Grid.ColumnSpan="2" ItemsSource="{Binding CardList.Items}"
                               SelectedItem="{Binding CardList.SelectedItem}" Margin="0,0,0,8">
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn Header="ID" Width="200" DisplayMemberBinding="{Binding Id}"/>
-                                <GridViewColumn Header="Name" Width="280" DisplayMemberBinding="{Binding Name}"/>
-                                <GridViewColumn Header="Favorite" Width="80" DisplayMemberBinding="{Binding IsFavorite}"/>
-                                <GridViewColumn Header="Blocked" Width="80" DisplayMemberBinding="{Binding IsBlocked}"/>
+                                <GridViewColumn Width="200" DisplayMemberBinding="{Binding Id}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Content="ID" Tag="Id" Click="OnCardsColumnHeaderClick"/>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
+                                <GridViewColumn Width="280" DisplayMemberBinding="{Binding Name}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Content="Name" Tag="Name" Click="OnCardsColumnHeaderClick"/>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
+                                <GridViewColumn Width="80" DisplayMemberBinding="{Binding IsFavorite}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Content="Favorite" Tag="IsFavorite" Click="OnCardsColumnHeaderClick"/>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
+                                <GridViewColumn Width="80" DisplayMemberBinding="{Binding IsBlocked}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Content="Blocked" Tag="IsBlocked" Click="OnCardsColumnHeaderClick"/>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
                             </GridView>
                         </ListView.View>
                     </ListView>

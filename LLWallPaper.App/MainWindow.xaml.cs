@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,8 +17,42 @@ namespace LLWallPaper.App;
 /// </summary>
 public partial class MainWindow : Window
 {
+    private GridViewColumnHeader? _lastHeaderClicked;
+    private ListSortDirection _lastDirection = ListSortDirection.Ascending;
+
     public MainWindow()
     {
         InitializeComponent();
     }
+
+    private void OnCardsColumnHeaderClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is not GridViewColumnHeader header || header.Tag is not string sortBy)
+        {
+            return;
+        }
+
+        var direction = ListSortDirection.Ascending;
+        if (_lastHeaderClicked == header)
+        {
+            direction =
+                _lastDirection == ListSortDirection.Ascending
+                    ? ListSortDirection.Descending
+                    : ListSortDirection.Ascending;
+        }
+
+        _lastHeaderClicked = header;
+        _lastDirection = direction;
+
+        var view = CollectionViewSource.GetDefaultView(CardListView.ItemsSource);
+        if (view is null)
+        {
+            return;
+        }
+
+        view.SortDescriptions.Clear();
+        view.SortDescriptions.Add(new SortDescription(sortBy, direction));
+        view.Refresh();
+    }
 }
+
