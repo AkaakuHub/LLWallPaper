@@ -33,7 +33,7 @@ public sealed class CardListViewModel : ViewModelBase
         _settingsProvider = settingsProvider;
 
         Items = new ObservableCollection<CardItemViewModel>();
-        FetchCommand = new AsyncRelayCommand(_ => FetchWithRetryAsync());
+        FetchCommand = new AsyncRelayCommand(_ => FetchWithRetryAsync(0));
         ApplyCommand = new AsyncRelayCommand(_ => ApplySelectedAsync(), _ => SelectedItem is not null);
         ToggleFavoriteCommand = new RelayCommand(_ => ToggleFavorite(), _ => SelectedItem is not null);
         ToggleBlockedCommand = new RelayCommand(_ => ToggleBlocked(), _ => SelectedItem is not null);
