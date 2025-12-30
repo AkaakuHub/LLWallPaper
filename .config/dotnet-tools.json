@@ -6,7 +6,15 @@
       "version": "5.1.250801",
       "commands": [
         "dotnet-format"
-      ]
+      ],
+      "rollForward": false
+    },
+    "csharpier": {
+      "version": "1.2.4",
+      "commands": [
+        "csharpier"
+      ],
+      "rollForward": false
     }
   }
 }

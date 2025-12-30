@@ -28,6 +28,12 @@
                         <TextBlock Text="{Binding CurrentSource}"/>
                     </StackPanel>
                     <TextBlock Text="{Binding StatusText}" Margin="0,8,0,0"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                        <Button Content="Toggle Favorite" Width="140" Margin="0,0,8,0"
+                                Command="{Binding ToggleCurrentFavoriteCommand}"/>
+                        <Button Content="Toggle Blocked" Width="140"
+                                Command="{Binding ToggleCurrentBlockedCommand}"/>
+                    </StackPanel>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center">
@@ -38,6 +44,48 @@
         </Border>
 
         <TabControl Grid.Row="1" Margin="0,16,0,0">
+            <TabItem Header="Cards">
+                <Grid Margin="12">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="0,0,8,8">
+                        <TextBox Width="420" Height="20"
+                                 Text="{Binding CardList.SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
+                    <Button Grid.Row="0" Grid.Column="1" Content="Fetch" Width="96" Margin="0,0,0,8"
+                            Command="{Binding CardList.FetchCommand}"/>
+
+                    <ListView Grid.Row="1" Grid.ColumnSpan="2" ItemsSource="{Binding CardList.Items}"
+                              SelectedItem="{Binding CardList.SelectedItem}" Margin="0,0,0,8">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="ID" Width="200" DisplayMemberBinding="{Binding Id}"/>
+                                <GridViewColumn Header="Name" Width="280" DisplayMemberBinding="{Binding Name}"/>
+                                <GridViewColumn Header="Favorite" Width="80" DisplayMemberBinding="{Binding IsFavorite}"/>
+                                <GridViewColumn Header="Blocked" Width="80" DisplayMemberBinding="{Binding IsBlocked}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+
+                    <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal">
+                        <Button Content="Apply" Width="96" Margin="0,0,8,0" Command="{Binding CardList.ApplyCommand}"/>
+                        <Button Content="Toggle Favorite" Width="140" Margin="0,0,8,0" Command="{Binding CardList.ToggleFavoriteCommand}"/>
+                        <Button Content="Toggle Blocked" Width="140" Command="{Binding CardList.ToggleBlockedCommand}"/>
+                    </StackPanel>
+
+                    <TextBlock Grid.Row="2" Grid.Column="1" VerticalAlignment="Center"
+                               Text="{Binding CardList.StatusMessage}"/>
+                </Grid>
+            </TabItem>
+
             <TabItem Header="Settings">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <Grid Margin="12">
@@ -105,48 +153,6 @@
                                 HorizontalAlignment="Left" Command="{Binding Settings.SaveCommand}"/>
                     </Grid>
                 </ScrollViewer>
-            </TabItem>
-
-            <TabItem Header="Cards">
-                <Grid Margin="12">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="0,0,8,8">
-                        <TextBox Width="420" Height="20"
-                                 Text="{Binding CardList.SearchText, UpdateSourceTrigger=PropertyChanged}"/>
-                    </StackPanel>
-                    <Button Grid.Row="0" Grid.Column="1" Content="Fetch" Width="96" Margin="0,0,0,8"
-                            Command="{Binding CardList.FetchCommand}"/>
-
-                    <ListView Grid.Row="1" Grid.ColumnSpan="2" ItemsSource="{Binding CardList.Items}"
-                              SelectedItem="{Binding CardList.SelectedItem}" Margin="0,0,0,8">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn Header="ID" Width="200" DisplayMemberBinding="{Binding Id}"/>
-                                <GridViewColumn Header="Name" Width="280" DisplayMemberBinding="{Binding Name}"/>
-                                <GridViewColumn Header="Favorite" Width="80" DisplayMemberBinding="{Binding IsFavorite}"/>
-                                <GridViewColumn Header="Blocked" Width="80" DisplayMemberBinding="{Binding IsBlocked}"/>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-
-                    <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal">
-                        <Button Content="Apply" Width="96" Margin="0,0,8,0" Command="{Binding CardList.ApplyCommand}"/>
-                        <Button Content="Toggle Favorite" Width="140" Margin="0,0,8,0" Command="{Binding CardList.ToggleFavoriteCommand}"/>
-                        <Button Content="Toggle Blocked" Width="140" Command="{Binding CardList.ToggleBlockedCommand}"/>
-                    </StackPanel>
-
-                    <TextBlock Grid.Row="2" Grid.Column="1" VerticalAlignment="Center"
-                               Text="{Binding CardList.StatusMessage}"/>
-                </Grid>
             </TabItem>
         </TabControl>
     </Grid>

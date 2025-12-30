@@ -18,6 +18,9 @@ public sealed class MainViewModel : ViewModelBase
     private string _currentCardName = "-";
     private string _currentCardId = "-";
     private string _currentSource = "-";
+    private CardItem? _currentCard;
+    private bool _currentIsFavorite;
+    private bool _currentIsBlocked;
 
     public MainViewModel(
         Settings settings,
@@ -41,6 +44,8 @@ public sealed class MainViewModel : ViewModelBase
 
         NextCommand = new AsyncRelayCommand(_ => ApplyNextAsync());
         ToggleAutoCommand = new RelayCommand(_ => ToggleAuto());
+        ToggleCurrentFavoriteCommand = new RelayCommand(_ => ToggleCurrentFavorite(), _ => _currentCard is not null);
+        ToggleCurrentBlockedCommand = new RelayCommand(_ => ToggleCurrentBlocked(), _ => _currentCard is not null);
         ExitCommand = new RelayCommand(_ => ExitRequested?.Invoke(this, EventArgs.Empty));
 
         _wallpaperUseCase.WallpaperChanged += OnWallpaperChanged;
@@ -75,10 +80,24 @@ public sealed class MainViewModel : ViewModelBase
         set => SetProperty(ref _currentSource, value);
     }
 
+    public bool CurrentIsFavorite
+    {
+        get => _currentIsFavorite;
+        set => SetProperty(ref _currentIsFavorite, value);
+    }
+
+    public bool CurrentIsBlocked
+    {
+        get => _currentIsBlocked;
+        set => SetProperty(ref _currentIsBlocked, value);
+    }
+
     public bool IsAutoEnabled => _settings.AutoRotateEnabled;
 
     public AsyncRelayCommand NextCommand { get; }
     public RelayCommand ToggleAutoCommand { get; }
+    public RelayCommand ToggleCurrentFavoriteCommand { get; }
+    public RelayCommand ToggleCurrentBlockedCommand { get; }
     public RelayCommand ExitCommand { get; }
 
     public async Task InitializeAsync()
@@ -121,12 +140,41 @@ public sealed class MainViewModel : ViewModelBase
         }
     }
 
+    private void ToggleCurrentFavorite()
+    {
+        if (_currentCard is null)
+        {
+            return;
+        }
+
+        _favoritesStore.ToggleFavorite(_currentCard.Id);
+        CurrentIsFavorite = _favoritesStore.IsFavorite(_currentCard.Id);
+        StatusText = CurrentIsFavorite ? "Marked as favorite." : "Removed from favorites.";
+    }
+
+    private void ToggleCurrentBlocked()
+    {
+        if (_currentCard is null)
+        {
+            return;
+        }
+
+        _favoritesStore.ToggleBlocked(_currentCard.Id);
+        CurrentIsBlocked = _favoritesStore.IsBlocked(_currentCard.Id);
+        StatusText = CurrentIsBlocked ? "Marked as blocked." : "Removed from blocked.";
+    }
+
     private void OnWallpaperChanged(object? sender, WallpaperChangedEventArgs e)
     {
+        _currentCard = e.Card;
         CurrentCardName = e.Card.Name;
         CurrentCardId = e.Card.Id;
         CurrentSource = e.Reason;
+        CurrentIsFavorite = _favoritesStore.IsFavorite(e.Card.Id);
+        CurrentIsBlocked = _favoritesStore.IsBlocked(e.Card.Id);
         StatusText = "Wallpaper updated.";
+        ToggleCurrentFavoriteCommand.RaiseCanExecuteChanged();
+        ToggleCurrentBlockedCommand.RaiseCanExecuteChanged();
     }
 }
 
