@@ -23,7 +23,7 @@ public sealed class BackendApiClient : IBackendApiClient
         var baseUrl = _baseUrlProvider()?.TrimEnd('/') ?? string.Empty;
         if (string.IsNullOrWhiteSpace(baseUrl))
         {
-            return Array.Empty<CardItem>();
+            throw new InvalidOperationException("Backend base URL is empty.");
         }
 
         try
@@ -32,8 +32,7 @@ public sealed class BackendApiClient : IBackendApiClient
             using var response = await _httpClient.GetAsync(requestUrl, cancellationToken);
             if (!response.IsSuccessStatusCode)
             {
-                _logger.Error($"Backend returned {response.StatusCode} for {requestUrl}.");
-                return Array.Empty<CardItem>();
+                throw new HttpRequestException($"Backend returned {response.StatusCode} for {requestUrl}.");
             }
 
             await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
@@ -51,8 +50,8 @@ public sealed class BackendApiClient : IBackendApiClient
         catch (Exception ex)
         {
             _logger.Error("Failed to fetch cards from backend.", ex);
+            throw;
         }
-
         return Array.Empty<CardItem>();
     }
 
