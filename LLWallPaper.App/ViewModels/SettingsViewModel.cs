@@ -10,14 +10,16 @@ public sealed class SettingsViewModel : ViewModelBase
     private readonly SettingsStore _settingsStore;
     private readonly WallpaperScheduler _scheduler;
     private readonly StartupRegistryService _startupRegistryService;
+    private readonly HistoryStore _historyStore;
     private readonly Settings _settings;
 
-    public SettingsViewModel(Settings settings, SettingsStore settingsStore, WallpaperScheduler scheduler, StartupRegistryService startupRegistryService)
+    public SettingsViewModel(Settings settings, SettingsStore settingsStore, WallpaperScheduler scheduler, StartupRegistryService startupRegistryService, HistoryStore historyStore)
     {
         _settings = settings;
         _settingsStore = settingsStore;
         _scheduler = scheduler;
         _startupRegistryService = startupRegistryService;
+        _historyStore = historyStore;
         SaveCommand = new RelayCommand(_ => Save());
     }
 
@@ -164,11 +166,25 @@ public sealed class SettingsViewModel : ViewModelBase
         }
     }
 
+    public int HistoryMaxEntries
+    {
+        get => _settings.HistoryMaxEntries;
+        set
+        {
+            if (_settings.HistoryMaxEntries != value)
+            {
+                _settings.HistoryMaxEntries = value;
+                RaisePropertyChanged();
+            }
+        }
+    }
+
     public RelayCommand SaveCommand { get; }
 
     private void Save()
     {
         _settingsStore.Save(_settings);
+        _historyStore.TrimToMax(_settings.HistoryMaxEntries);
         System.Windows.MessageBox.Show("Settings saved.", "LLWallPaper");
         var exePath = _startupRegistryService.ResolveExecutablePath();
         if (_settings.StartWithWindows)

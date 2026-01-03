@@ -76,7 +76,7 @@ public sealed class WallpaperUseCase
                 Key = card.Id,
                 FileName = string.Empty,
                 Result = "download_failed"
-            });
+            }, settings.HistoryMaxEntries);
 
             return new WallpaperResult(false, "Download failed.");
         }
@@ -89,7 +89,7 @@ public sealed class WallpaperUseCase
                 Key = card.Id,
                 FileName = Path.GetFileName(localPath),
                 Result = "wallpaper_not_supported"
-            });
+            }, settings.HistoryMaxEntries);
 
             return new WallpaperResult(false, "IDesktopWallpaper not available on this OS.");
         }
@@ -103,7 +103,7 @@ public sealed class WallpaperUseCase
                 Key = card.Id,
                 FileName = Path.GetFileName(localPath),
                 Result = "setwallpaper_failed"
-            });
+            }, settings.HistoryMaxEntries);
 
             return new WallpaperResult(false, "SetWallpaper failed.");
         }
@@ -116,7 +116,7 @@ public sealed class WallpaperUseCase
                 Key = card.Id,
                 FileName = Path.GetFileName(localPath),
                 Result = "ok"
-            });
+            }, settings.HistoryMaxEntries);
 
             WallpaperChanged?.Invoke(this, new WallpaperChangedEventArgs(card, localPath, reason));
             return new WallpaperResult(true, "Wallpaper updated.");

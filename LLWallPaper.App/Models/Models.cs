@@ -44,6 +44,9 @@ public sealed class Settings
 
     [JsonPropertyName("cacheMaxMb")]
     public int CacheMaxMb { get; set; } = 2048;
+
+    [JsonPropertyName("historyMaxEntries")]
+    public int HistoryMaxEntries { get; set; } = 100;
 }
 
 public sealed class Favorites

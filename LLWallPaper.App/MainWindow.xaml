@@ -124,6 +124,8 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="220"/>
@@ -166,7 +168,12 @@
                         <TextBox Grid.Row="15" Grid.Column="1" Width="160" HorizontalAlignment="Left"
                                  Text="{Binding Settings.CacheMaxMb}"/>
 
-                        <Button Grid.Row="16" Grid.Column="1" Content="Save Settings" Width="140" Margin="0,20,0,0"
+                        <TextBlock Grid.Row="16" Grid.ColumnSpan="2" Text="History" FontWeight="SemiBold" Margin="0,16,0,8"/>
+                        <TextBlock Grid.Row="17" Grid.Column="0" Text="History Max Entries" VerticalAlignment="Center"/>
+                        <TextBox Grid.Row="17" Grid.Column="1" Width="160" HorizontalAlignment="Left"
+                                 Text="{Binding Settings.HistoryMaxEntries}"/>
+
+                        <Button Grid.Row="18" Grid.Column="1" Content="Save Settings" Width="140" Margin="0,20,0,0"
                                 HorizontalAlignment="Left" Command="{Binding Settings.SaveCommand}"/>
                     </Grid>
                 </ScrollViewer>

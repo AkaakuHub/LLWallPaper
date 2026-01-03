@@ -67,7 +67,7 @@ public partial class App : System.Windows.Application
             var scheduler = new WallpaperScheduler(wallpaperUseCase, () => settings, logger);
             var startupRegistryService = new StartupRegistryService();
 
-            var settingsViewModel = new SettingsViewModel(settings, settingsStore, scheduler, startupRegistryService);
+            var settingsViewModel = new SettingsViewModel(settings, settingsStore, scheduler, startupRegistryService, historyStore);
             var cardListViewModel = new CardListViewModel(catalogService, favoritesStore, wallpaperUseCase, () => settings);
             var historyViewModel = new HistoryViewModel(historyStore);
             var mainViewModel = new MainViewModel(settings, settingsStore, favoritesStore, wallpaperUseCase, scheduler, cardListViewModel, settingsViewModel, historyViewModel, logger);

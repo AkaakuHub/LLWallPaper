@@ -14,11 +14,16 @@ public sealed class HistoryStore
         _logger = logger;
     }
 
-    public void Append(HistoryEntry entry)
+    public void Append(HistoryEntry entry, int maxEntries)
     {
         var state = LoadState();
         state.BasePath = ResolveBasePath(state.BasePath);
         state.Entries.Add(entry);
+        if (maxEntries > 0 && state.Entries.Count > maxEntries)
+        {
+            var excess = state.Entries.Count - maxEntries;
+            state.Entries.RemoveRange(0, excess);
+        }
         SaveState(state);
     }
 
@@ -30,6 +35,24 @@ public sealed class HistoryStore
     public IReadOnlyList<HistoryEntry> GetAllEntries()
     {
         return LoadState().Entries;
+    }
+
+    public void TrimToMax(int maxEntries)
+    {
+        if (maxEntries <= 0)
+        {
+            return;
+        }
+
+        var state = LoadState();
+        if (state.Entries.Count <= maxEntries)
+        {
+            return;
+        }
+
+        var excess = state.Entries.Count - maxEntries;
+        state.Entries.RemoveRange(0, excess);
+        SaveState(state);
     }
 
     public IReadOnlyList<string> GetRecentKeys(int count)
