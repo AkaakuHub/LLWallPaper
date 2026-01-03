@@ -1,3 +1,4 @@
+using System.IO;
 using LLWallPaper.App.Models;
 using LLWallPaper.App.Stores;
 using LLWallPaper.App.Utils;
@@ -62,8 +63,7 @@ public sealed class WallpaperUseCase
 
     public async Task<WallpaperResult> ApplyCardAsync(CardItem card, Settings settings, CancellationToken cancellationToken, string reason)
     {
-        var protectedPaths = _historyStore.GetRecentEntries(settings.RecentExcludeCount)
-            .Select(entry => entry.LocalPath)
+        var protectedPaths = _historyStore.GetRecentLocalPaths(settings.RecentExcludeCount)
             .Where(path => !string.IsNullOrWhiteSpace(path))
             .ToList();
 
@@ -74,7 +74,7 @@ public sealed class WallpaperUseCase
             {
                 At = DateTimeOffset.Now,
                 Key = card.Id,
-                LocalPath = string.Empty,
+                FileName = string.Empty,
                 Result = "download_failed"
             });
 
@@ -87,7 +87,7 @@ public sealed class WallpaperUseCase
             {
                 At = DateTimeOffset.Now,
                 Key = card.Id,
-                LocalPath = localPath,
+                FileName = Path.GetFileName(localPath),
                 Result = "wallpaper_not_supported"
             });
 
@@ -101,7 +101,7 @@ public sealed class WallpaperUseCase
             {
                 At = DateTimeOffset.Now,
                 Key = card.Id,
-                LocalPath = localPath,
+                FileName = Path.GetFileName(localPath),
                 Result = "setwallpaper_failed"
             });
 
@@ -114,7 +114,7 @@ public sealed class WallpaperUseCase
             {
                 At = DateTimeOffset.Now,
                 Key = card.Id,
-                LocalPath = localPath,
+                FileName = Path.GetFileName(localPath),
                 Result = "ok"
             });
 

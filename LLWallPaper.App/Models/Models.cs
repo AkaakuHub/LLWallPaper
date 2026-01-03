@@ -59,7 +59,16 @@ public sealed class HistoryEntry
 {
     public DateTimeOffset At { get; init; } = DateTimeOffset.UtcNow;
     public string Key { get; init; } = "";
-    public string LocalPath { get; init; } = "";
+    public string FileName { get; init; } = "";
     public string Result { get; init; } = "ok";
+}
+
+public sealed class HistoryState
+{
+    [JsonPropertyName("basePath")]
+    public string BasePath { get; set; } = "";
+
+    [JsonPropertyName("entries")]
+    public List<HistoryEntry> Entries { get; set; } = new();
 }
 

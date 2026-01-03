@@ -170,6 +170,60 @@
                     </Grid>
                 </ScrollViewer>
             </TabItem>
+
+            <TabItem Header="History">
+                <Grid Margin="12">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="0,0,8,8">
+                        <TextBlock Text="Base Path:" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding History.BasePath}" Margin="8,0,0,0"/>
+                        <TextBlock Text="   Entries:" FontWeight="SemiBold" Margin="16,0,0,0"/>
+                        <TextBlock Text="{Binding History.TotalCount}" Margin="8,0,0,0"/>
+                    </StackPanel>
+                    <Button Grid.Row="0" Grid.Column="1" Content="Refresh" Width="96" Margin="0,0,0,8"
+                            Command="{Binding History.RefreshCommand}"/>
+
+                    <ListView Grid.Row="1" Grid.ColumnSpan="2" ItemsSource="{Binding History.Items}"
+                              ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Width="170" DisplayMemberBinding="{Binding At, StringFormat=yyyy-MM-dd HH:mm:ss}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Content="At"/>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
+                                <GridViewColumn Width="90" DisplayMemberBinding="{Binding Key}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Content="Key"/>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
+                                <GridViewColumn Width="130" DisplayMemberBinding="{Binding Result}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Content="Result"/>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
+                                <GridViewColumn Width="520" DisplayMemberBinding="{Binding FileName}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Content="File Name"/>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+
+                    <TextBlock Grid.Row="2" Grid.ColumnSpan="2" VerticalAlignment="Center"
+                               Text="{Binding History.StatusMessage}"/>
+                </Grid>
+            </TabItem>
         </TabControl>
     </Grid>
 </Window>

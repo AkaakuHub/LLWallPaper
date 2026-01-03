@@ -30,6 +30,7 @@ public sealed class MainViewModel : ViewModelBase
         WallpaperScheduler scheduler,
         CardListViewModel cardListViewModel,
         SettingsViewModel settingsViewModel,
+        HistoryViewModel historyViewModel,
         AppLogger logger)
     {
         _settings = settings;
@@ -41,6 +42,7 @@ public sealed class MainViewModel : ViewModelBase
 
         CardList = cardListViewModel;
         Settings = settingsViewModel;
+        History = historyViewModel;
 
         NextCommand = new AsyncRelayCommand(_ => ApplyNextAsync());
         ToggleAutoCommand = new RelayCommand(_ => ToggleAuto());
@@ -55,6 +57,7 @@ public sealed class MainViewModel : ViewModelBase
 
     public CardListViewModel CardList { get; }
     public SettingsViewModel Settings { get; }
+    public HistoryViewModel History { get; }
 
     public string StatusText
     {
@@ -104,6 +107,7 @@ public sealed class MainViewModel : ViewModelBase
     {
         _favoritesStore.Load();
         await CardList.FetchWithRetryAsync(0);
+        History.Refresh();
 
         if (_settings.RotateOnAppStart)
         {
@@ -175,6 +179,7 @@ public sealed class MainViewModel : ViewModelBase
         StatusText = "Wallpaper updated.";
         ToggleCurrentFavoriteCommand.RaiseCanExecuteChanged();
         ToggleCurrentBlockedCommand.RaiseCanExecuteChanged();
+        History.Refresh();
     }
 }
 

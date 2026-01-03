@@ -15,7 +15,8 @@ public static class AppPaths
 
     public static string SettingsPath => Path.Combine(Root, "settings.json");
     public static string FavoritesPath => Path.Combine(Root, "favorites.json");
-    public static string HistoryPath => Path.Combine(Root, "history.jsonl");
+    public static string HistoryPath => Path.Combine(Root, "history.json");
+    public static string LegacyHistoryPath => Path.Combine(Root, "history.jsonl");
     public static string LogPath => Path.Combine(Root, "logs", "app.log");
     public static string CacheRoot => Path.Combine(Root, "cache", "images");
 
