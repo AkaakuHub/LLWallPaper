@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Windows.Media.Imaging;
 using LLWallPaper.App.Models;
 using LLWallPaper.App.Stores;
 using LLWallPaper.App.Utils;
@@ -10,6 +12,9 @@ public sealed class HistoryViewModel : ViewModelBase
 {
     private readonly HistoryStore _historyStore;
     private string _basePath = string.Empty;
+    private HistoryEntry? _selectedEntry;
+    private string _selectedImagePath = string.Empty;
+    private bool _hasSelectedImage;
     private string _statusMessage = "Ready";
     private bool _isBusy;
 
@@ -19,6 +24,7 @@ public sealed class HistoryViewModel : ViewModelBase
         Items = new ObservableCollection<HistoryEntry>();
         Items.CollectionChanged += (_, _) => RaisePropertyChanged(nameof(TotalCount));
         RefreshCommand = new RelayCommand(_ => Refresh(), _ => !IsBusy);
+        CopyImageCommand = new RelayCommand(_ => CopySelectedImage(), _ => HasSelectedImage);
     }
 
     public ObservableCollection<HistoryEntry> Items { get; }
@@ -28,7 +34,33 @@ public sealed class HistoryViewModel : ViewModelBase
     public string BasePath
     {
         get => _basePath;
-        set => SetProperty(ref _basePath, value);
+        set
+        {
+            SetProperty(ref _basePath, value);
+            UpdateSelectedImage();
+        }
+    }
+
+    public HistoryEntry? SelectedEntry
+    {
+        get => _selectedEntry;
+        set
+        {
+            SetProperty(ref _selectedEntry, value);
+            UpdateSelectedImage();
+        }
+    }
+
+    public string SelectedImagePath
+    {
+        get => _selectedImagePath;
+        private set => SetProperty(ref _selectedImagePath, value);
+    }
+
+    public bool HasSelectedImage
+    {
+        get => _hasSelectedImage;
+        private set => SetProperty(ref _hasSelectedImage, value);
     }
 
     public string StatusMessage
@@ -54,6 +86,7 @@ public sealed class HistoryViewModel : ViewModelBase
     }
 
     public RelayCommand RefreshCommand { get; }
+    public RelayCommand CopyImageCommand { get; }
 
     public void Refresh()
     {
@@ -67,9 +100,24 @@ public sealed class HistoryViewModel : ViewModelBase
                 .OrderByDescending(entry => entry.At)
                 .ToList();
 
+            var previous = SelectedEntry;
             foreach (var entry in entries)
             {
                 Items.Add(entry);
+            }
+
+            if (Items.Count > 0)
+            {
+                SelectedEntry = previous is null
+                    ? Items[0]
+                    : Items.FirstOrDefault(item =>
+                        item.At == previous.At &&
+                        item.Key == previous.Key &&
+                        item.FileName == previous.FileName) ?? Items[0];
+            }
+            else
+            {
+                SelectedEntry = null;
             }
 
             StatusMessage = $"Loaded {Items.Count} entries.";
@@ -82,5 +130,45 @@ public sealed class HistoryViewModel : ViewModelBase
         {
             IsBusy = false;
         }
+    }
+
+    private void CopySelectedImage()
+    {
+        if (!HasSelectedImage || string.IsNullOrWhiteSpace(SelectedImagePath))
+        {
+            StatusMessage = "No image to copy.";
+            return;
+        }
+
+        try
+        {
+            var image = new BitmapImage();
+            image.BeginInit();
+            image.CacheOption = BitmapCacheOption.OnLoad;
+            image.UriSource = new Uri(SelectedImagePath, UriKind.Absolute);
+            image.EndInit();
+            image.Freeze();
+            System.Windows.Clipboard.SetImage(image);
+            StatusMessage = "Image copied to clipboard.";
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Failed to copy image: {ex.Message}";
+        }
+    }
+
+    private void UpdateSelectedImage()
+    {
+        if (_selectedEntry is null || string.IsNullOrWhiteSpace(_basePath) || string.IsNullOrWhiteSpace(_selectedEntry.FileName))
+        {
+            SelectedImagePath = string.Empty;
+            HasSelectedImage = false;
+            return;
+        }
+
+        var path = Path.Combine(_basePath, _selectedEntry.FileName);
+        SelectedImagePath = path;
+        HasSelectedImage = File.Exists(path);
+        CopyImageCommand.RaiseCanExecuteChanged();
     }
 }

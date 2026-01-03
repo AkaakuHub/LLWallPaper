@@ -125,11 +125,11 @@ public sealed class HistoryStore
     {
         try
         {
-            var entries = ReadLegacyEntries();
+            var legacy = ReadLegacyEntries();
             var state = new HistoryState
             {
-                BasePath = ResolveBasePath(string.Empty),
-                Entries = entries
+                BasePath = ResolveBasePath(legacy.BasePath),
+                Entries = legacy.Entries
             };
             SaveState(state);
 
@@ -145,13 +145,14 @@ public sealed class HistoryStore
         }
     }
 
-    private List<HistoryEntry> ReadLegacyEntries()
+    private LegacyReadResult ReadLegacyEntries()
     {
         var entries = new List<HistoryEntry>();
+        string? basePath = null;
         var bytes = File.ReadAllBytes(AppPaths.LegacyHistoryPath);
         if (bytes.Length == 0)
         {
-            return entries;
+            return new LegacyReadResult(entries, basePath ?? string.Empty);
         }
 
         var options = new JsonReaderOptions
@@ -170,17 +171,17 @@ public sealed class HistoryStore
             }
 
             using var doc = JsonDocument.ParseValue(ref reader);
-            var entry = ParseLegacyEntry(doc.RootElement);
+            var entry = ParseLegacyEntry(doc.RootElement, ref basePath);
             if (entry is not null)
             {
                 entries.Add(entry);
             }
         }
 
-        return entries;
+        return new LegacyReadResult(entries, basePath ?? string.Empty);
     }
 
-    private static HistoryEntry? ParseLegacyEntry(JsonElement element)
+    private static HistoryEntry? ParseLegacyEntry(JsonElement element, ref string? basePath)
     {
         var entry = element.Deserialize<HistoryEntry>(JsonOptions.Default);
         if (entry is null)
@@ -198,6 +199,7 @@ public sealed class HistoryStore
             var localPath = localPathProp.GetString();
             if (!string.IsNullOrWhiteSpace(localPath))
             {
+                basePath ??= Path.GetDirectoryName(localPath);
                 return new HistoryEntry
                 {
                     At = entry.At,
@@ -210,6 +212,8 @@ public sealed class HistoryStore
 
         return entry;
     }
+
+    private readonly record struct LegacyReadResult(List<HistoryEntry> Entries, string BasePath);
 
     private static string ResolveBasePath(string basePath)
     {
