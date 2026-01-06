@@ -17,6 +17,7 @@ public partial class App : System.Windows.Application
     private MainWindow? _mainWindow;
     private MainViewModel? _mainViewModel;
     private bool _isExitRequested;
+    private WinForms.ToolStripMenuItem? _currentWallpaperItem;
 
     protected override async void OnStartup(StartupEventArgs e)
     {
@@ -138,7 +139,13 @@ public partial class App : System.Windows.Application
             return;
         }
 
+        _mainViewModel.PropertyChanged += OnMainViewModelPropertyChanged;
+
         var menu = new WinForms.ContextMenuStrip();
+        _currentWallpaperItem = new WinForms.ToolStripMenuItem();
+        _currentWallpaperItem.Enabled = false;
+        UpdateTrayCurrentWallpaper();
+
         var nextItem = new WinForms.ToolStripMenuItem("Next");
         nextItem.Click += (_, _) => _mainViewModel.NextCommand.Execute(null);
 
@@ -146,11 +153,13 @@ public partial class App : System.Windows.Application
         toggleItem.Click += (_, _) => _mainViewModel.ToggleAutoCommand.Execute(null);
 
         var openItem = new WinForms.ToolStripMenuItem("Open");
-        openItem.Click += (_, _) => ShowMainWindow();
+        openItem.Click += (_, _) => ShowMainWindow(forceShow: true);
 
         var exitItem = new WinForms.ToolStripMenuItem("Exit");
         exitItem.Click += (_, _) => ExitApp();
 
+        menu.Items.Add(_currentWallpaperItem);
+        menu.Items.Add(new WinForms.ToolStripSeparator());
         menu.Items.Add(openItem);
         menu.Items.Add(nextItem);
         menu.Items.Add(toggleItem);
@@ -167,16 +176,26 @@ public partial class App : System.Windows.Application
             Text = "LLWallPaper"
         };
         _notifyIcon.ContextMenuStrip = menu;
-        _notifyIcon.DoubleClick += (_, _) => ShowMainWindow();
+        _notifyIcon.MouseClick += (_, args) =>
+        {
+            if (args.Button == WinForms.MouseButtons.Left)
+            {
+                ShowMainWindow(forceShow: true);
+            }
+        };
     }
 
-    private void ShowMainWindow()
+    private void ShowMainWindow(bool forceShow)
     {
         if (_mainWindow is null)
         {
             return;
         }
 
+        if (forceShow)
+        {
+            _mainWindow.WindowState = WindowState.Normal;
+        }
         _mainWindow.Show();
         _mainWindow.Activate();
     }
@@ -185,7 +204,36 @@ public partial class App : System.Windows.Application
     {
         _isExitRequested = true;
         _notifyIcon?.Dispose();
+        if (_mainViewModel is not null)
+        {
+            _mainViewModel.PropertyChanged -= OnMainViewModelPropertyChanged;
+        }
         _mainWindow?.Close();
         Shutdown();
+    }
+
+    private void OnMainViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(MainViewModel.CurrentCardName))
+        {
+            UpdateTrayCurrentWallpaper();
+        }
+    }
+
+    private void UpdateTrayCurrentWallpaper()
+    {
+        if (_currentWallpaperItem is null || _mainViewModel is null)
+        {
+            return;
+        }
+
+        var text = $"Current: {_mainViewModel.CurrentCardName}";
+        if (!Dispatcher.CheckAccess())
+        {
+            Dispatcher.Invoke(() => _currentWallpaperItem.Text = text);
+            return;
+        }
+
+        _currentWallpaperItem.Text = text;
     }
 }
