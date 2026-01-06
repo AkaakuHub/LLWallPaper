@@ -247,9 +247,12 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <Button Grid.Row="0" Grid.Column="1" Content="Copy Image" Width="120"
-                                        HorizontalAlignment="Left"
-                                        Command="{Binding History.CopyImageCommand}"/>
+                                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
+                                    <Button Content="Copy Image" Width="120"
+                                            Command="{Binding History.CopyImageCommand}"/>
+                                    <Button Content="Open Detail" Width="120" Margin="8,0,0,0"
+                                            Command="{Binding History.OpenDetailCommand}"/>
+                                </StackPanel>
 
                                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Selected At" FontWeight="SemiBold" Margin="0,12,0,0"/>
                                 <TextBlock Grid.Row="1" Grid.Column="1"

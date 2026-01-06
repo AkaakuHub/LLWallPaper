@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Media.Imaging;
 using LLWallPaper.App.Models;
+using LLWallPaper.App.Services;
 using LLWallPaper.App.Stores;
 using LLWallPaper.App.Utils;
 
@@ -11,6 +12,7 @@ namespace LLWallPaper.App.ViewModels;
 public sealed class HistoryViewModel : ViewModelBase
 {
     private readonly HistoryStore _historyStore;
+    private readonly CardDetailLinkService _cardDetailLinkService;
     private string _basePath = string.Empty;
     private HistoryEntry? _selectedEntry;
     private string _selectedImagePath = string.Empty;
@@ -18,13 +20,15 @@ public sealed class HistoryViewModel : ViewModelBase
     private string _statusMessage = "Ready";
     private bool _isBusy;
 
-    public HistoryViewModel(HistoryStore historyStore)
+    public HistoryViewModel(HistoryStore historyStore, CardDetailLinkService cardDetailLinkService)
     {
         _historyStore = historyStore;
+        _cardDetailLinkService = cardDetailLinkService;
         Items = new ObservableCollection<HistoryEntry>();
         Items.CollectionChanged += (_, _) => RaisePropertyChanged(nameof(TotalCount));
         RefreshCommand = new RelayCommand(_ => Refresh(), _ => !IsBusy);
         CopyImageCommand = new RelayCommand(_ => CopySelectedImage(), _ => HasSelectedImage);
+        OpenDetailCommand = new RelayCommand(_ => OpenSelectedDetail(), _ => CanOpenSelectedDetail());
     }
 
     public ObservableCollection<HistoryEntry> Items { get; }
@@ -48,6 +52,7 @@ public sealed class HistoryViewModel : ViewModelBase
         {
             SetProperty(ref _selectedEntry, value);
             UpdateSelectedImage();
+            OpenDetailCommand.RaiseCanExecuteChanged();
         }
     }
 
@@ -87,6 +92,7 @@ public sealed class HistoryViewModel : ViewModelBase
 
     public RelayCommand RefreshCommand { get; }
     public RelayCommand CopyImageCommand { get; }
+    public RelayCommand OpenDetailCommand { get; }
 
     public void Refresh()
     {
@@ -170,5 +176,28 @@ public sealed class HistoryViewModel : ViewModelBase
         SelectedImagePath = path;
         HasSelectedImage = File.Exists(path);
         CopyImageCommand.RaiseCanExecuteChanged();
+        OpenDetailCommand.RaiseCanExecuteChanged();
+    }
+
+    private bool CanOpenSelectedDetail()
+    {
+        return _selectedEntry is not null && !string.IsNullOrWhiteSpace(_selectedEntry.Key);
+    }
+
+    private void OpenSelectedDetail()
+    {
+        if (_selectedEntry is null || string.IsNullOrWhiteSpace(_selectedEntry.Key))
+        {
+            StatusMessage = "No card selected.";
+            return;
+        }
+
+        if (_cardDetailLinkService.TryOpen(_selectedEntry.Key, out var error))
+        {
+            StatusMessage = "Opened card detail.";
+            return;
+        }
+
+        StatusMessage = error;
     }
 }

@@ -66,10 +66,11 @@ public partial class App : System.Windows.Application
             var wallpaperUseCase = new WallpaperUseCase(catalogService, rotationService, cacheStore, desktopAdapter, favoritesStore, historyStore, logger);
             var scheduler = new WallpaperScheduler(wallpaperUseCase, () => settings, logger);
             var startupRegistryService = new StartupRegistryService();
+            var cardDetailLinkService = new CardDetailLinkService(() => settings.BackendBaseUrl, logger);
 
             var settingsViewModel = new SettingsViewModel(settings, settingsStore, scheduler, startupRegistryService, historyStore);
             var cardListViewModel = new CardListViewModel(catalogService, favoritesStore, wallpaperUseCase, () => settings);
-            var historyViewModel = new HistoryViewModel(historyStore);
+            var historyViewModel = new HistoryViewModel(historyStore, cardDetailLinkService);
             var mainViewModel = new MainViewModel(settings, settingsStore, favoritesStore, wallpaperUseCase, scheduler, cardListViewModel, settingsViewModel, historyViewModel, logger);
 
             _mainViewModel = mainViewModel;
