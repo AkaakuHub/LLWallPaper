@@ -113,7 +113,7 @@ public sealed class HistoryViewModel : ViewModelBase
                     : Items.FirstOrDefault(item =>
                         item.At == previous.At &&
                         item.Key == previous.Key &&
-                        item.FileName == previous.FileName) ?? Items[0];
+                        item.CardName == previous.CardName) ?? Items[0];
             }
             else
             {
@@ -159,14 +159,14 @@ public sealed class HistoryViewModel : ViewModelBase
 
     private void UpdateSelectedImage()
     {
-        if (_selectedEntry is null || string.IsNullOrWhiteSpace(_basePath) || string.IsNullOrWhiteSpace(_selectedEntry.FileName))
+        if (_selectedEntry is null || string.IsNullOrWhiteSpace(_selectedEntry.Key))
         {
             SelectedImagePath = string.Empty;
             HasSelectedImage = false;
             return;
         }
 
-        var path = Path.Combine(_basePath, _selectedEntry.FileName);
+        var path = AppPaths.GetCachePathForKey(_selectedEntry.Key);
         SelectedImagePath = path;
         HasSelectedImage = File.Exists(path);
         CopyImageCommand.RaiseCanExecuteChanged();

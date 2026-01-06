@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 
 namespace LLWallPaper.App.Utils;
 
@@ -19,6 +20,18 @@ public static class AppPaths
     public static string LegacyHistoryPath => Path.Combine(Root, "history.jsonl");
     public static string LogPath => Path.Combine(Root, "logs", "app.log");
     public static string CacheRoot => Path.Combine(Root, "cache", "images");
+
+    public static string GetCachePathForKey(string key)
+    {
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            return string.Empty;
+        }
+
+        var safeId = string.Concat(key.Select(ch => char.IsLetterOrDigit(ch) ? ch : '_'));
+        var fileName = $"card_{safeId}_full.webp";
+        return Path.Combine(CacheRoot, fileName);
+    }
 
     public static void EnsureDirectories()
     {

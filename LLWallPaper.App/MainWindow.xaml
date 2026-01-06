@@ -193,8 +193,8 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" Orientation="Horizontal">
-                            <TextBlock Text="Entries" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding History.TotalCount}" Margin="8,0,0,0"/>
+                            <TextBlock Text="Base Path" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding History.BasePath}" Margin="8,0,0,0" TextWrapping="Wrap"/>
                         </StackPanel>
                         <Button Grid.Column="1" Content="Refresh" Width="96"
                                 Command="{Binding History.RefreshCommand}"/>
@@ -222,9 +222,9 @@
                                             <GridViewColumnHeader Content="Key"/>
                                         </GridViewColumn.Header>
                                     </GridViewColumn>
-                                    <GridViewColumn Width="90" DisplayMemberBinding="{Binding Result}">
+                                    <GridViewColumn Width="140" DisplayMemberBinding="{Binding CardName}">
                                         <GridViewColumn.Header>
-                                            <GridViewColumnHeader Content="Result"/>
+                                            <GridViewColumnHeader Content="Card"/>
                                         </GridViewColumn.Header>
                                     </GridViewColumn>
                                 </GridView>
@@ -241,9 +241,6 @@
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="140"/>
@@ -254,21 +251,15 @@
                                         HorizontalAlignment="Left"
                                         Command="{Binding History.CopyImageCommand}"/>
 
-                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Base Path" FontWeight="SemiBold" Margin="0,12,0,0"/>
-                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding History.BasePath}" TextWrapping="Wrap" Margin="0,12,0,0"/>
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Selected At" FontWeight="SemiBold" Margin="0,12,0,0"/>
+                                <TextBlock Grid.Row="1" Grid.Column="1"
+                                           Text="{Binding History.SelectedEntry.At, StringFormat=yyyy-MM-dd HH:mm:ss}" Margin="0,12,0,0"/>
 
-                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Selected At" FontWeight="SemiBold" Margin="0,8,0,0"/>
-                                <TextBlock Grid.Row="2" Grid.Column="1"
-                                           Text="{Binding History.SelectedEntry.At, StringFormat=yyyy-MM-dd HH:mm:ss}" Margin="0,8,0,0"/>
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Selected Key" FontWeight="SemiBold" Margin="0,8,0,0"/>
+                                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding History.SelectedEntry.Key}" Margin="0,8,0,0"/>
 
-                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Selected Key" FontWeight="SemiBold" Margin="0,8,0,0"/>
-                                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding History.SelectedEntry.Key}" Margin="0,8,0,0"/>
-
-                                <TextBlock Grid.Row="4" Grid.Column="0" Text="Selected File" FontWeight="SemiBold" Margin="0,8,0,0"/>
-                                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding History.SelectedEntry.FileName}" Margin="0,8,0,0"/>
-
-                                <TextBlock Grid.Row="5" Grid.Column="0" Text="Selected Result" FontWeight="SemiBold" Margin="0,8,0,0"/>
-                                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding History.SelectedEntry.Result}" Margin="0,8,0,0"/>
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="Selected Card" FontWeight="SemiBold" Margin="0,8,0,0"/>
+                                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding History.SelectedEntry.CardName}" Margin="0,8,0,0"/>
                             </Grid>
                         </StackPanel>
                     </Grid>

@@ -1,4 +1,3 @@
-using System.IO;
 using LLWallPaper.App.Models;
 using LLWallPaper.App.Stores;
 using LLWallPaper.App.Utils;
@@ -70,41 +69,17 @@ public sealed class WallpaperUseCase
         var localPath = await _cacheStore.EnsureLocalAsync(card, settings.CacheMaxMb, protectedPaths);
         if (string.IsNullOrWhiteSpace(localPath))
         {
-            _historyStore.Append(new HistoryEntry
-            {
-                At = DateTimeOffset.Now,
-                Key = card.Id,
-                FileName = string.Empty,
-                Result = "download_failed"
-            }, settings.HistoryMaxEntries);
-
             return new WallpaperResult(false, "Download failed.");
         }
 
         if (_desktopWallpaperAdapter is null)
         {
-            _historyStore.Append(new HistoryEntry
-            {
-                At = DateTimeOffset.Now,
-                Key = card.Id,
-                FileName = Path.GetFileName(localPath),
-                Result = "wallpaper_not_supported"
-            }, settings.HistoryMaxEntries);
-
             return new WallpaperResult(false, "IDesktopWallpaper not available on this OS.");
         }
 
         if (!_desktopWallpaperAdapter.TrySetWallpaper(localPath, out var error))
         {
             _logger.Error("SetWallpaper failed.", error is null ? null : new InvalidOperationException(error));
-            _historyStore.Append(new HistoryEntry
-            {
-                At = DateTimeOffset.Now,
-                Key = card.Id,
-                FileName = Path.GetFileName(localPath),
-                Result = "setwallpaper_failed"
-            }, settings.HistoryMaxEntries);
-
             return new WallpaperResult(false, "SetWallpaper failed.");
         }
 
@@ -114,8 +89,7 @@ public sealed class WallpaperUseCase
             {
                 At = DateTimeOffset.Now,
                 Key = card.Id,
-                FileName = Path.GetFileName(localPath),
-                Result = "ok"
+                CardName = card.Name
             }, settings.HistoryMaxEntries);
 
             WallpaperChanged?.Invoke(this, new WallpaperChangedEventArgs(card, localPath, reason));

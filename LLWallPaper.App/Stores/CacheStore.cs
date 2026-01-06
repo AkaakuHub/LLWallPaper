@@ -19,10 +19,12 @@ public sealed class CacheStore
     public async Task<string?> EnsureLocalAsync(CardItem card, int cacheMaxMb, IReadOnlyCollection<string> protectedPaths)
     {
         AppPaths.EnsureDirectories();
-        var extension = ".webp";
-        var safeId = string.Concat(card.Id.Select(ch => char.IsLetterOrDigit(ch) ? ch : '_'));
-        var fileName = $"card_{safeId}_full{extension}";
-        var path = Path.Combine(AppPaths.CacheRoot, fileName);
+        var path = AppPaths.GetCachePathForKey(card.Id);
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            _logger.Error("Cache path could not be generated for empty card id.");
+            return null;
+        }
 
         if (File.Exists(path))
         {

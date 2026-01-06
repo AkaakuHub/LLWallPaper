@@ -62,8 +62,7 @@ public sealed class HistoryEntry
 {
     public DateTimeOffset At { get; init; } = DateTimeOffset.UtcNow;
     public string Key { get; init; } = "";
-    public string FileName { get; init; } = "";
-    public string Result { get; init; } = "ok";
+    public string CardName { get; init; } = "";
 }
 
 public sealed class HistoryState
