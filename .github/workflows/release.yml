@@ -68,7 +68,7 @@ jobs:
         shell: pwsh
         run: >-
           vpk pack
-          --packId AkaakuHub.LLWallPaper
+          --packId LLWallPaper
           --packVersion ${{ steps.version.outputs.value }}
           --packDir publish
           --mainExe LLWallPaper.App.exe
