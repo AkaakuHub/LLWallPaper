@@ -220,7 +220,8 @@ public partial class App : System.Windows.Application
 
     private void OnMainViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(MainViewModel.CurrentCardName))
+        if (e.PropertyName == nameof(MainViewModel.CurrentCardName)
+            || e.PropertyName == nameof(MainViewModel.CurrentCharacterName))
         {
             UpdateTrayCurrentWallpaper();
         }
@@ -233,7 +234,7 @@ public partial class App : System.Windows.Application
             return;
         }
 
-        var text = $"Current: {_mainViewModel.CurrentCardName}";
+        var text = $"Current: {_mainViewModel.CurrentCardName} / {_mainViewModel.CurrentCharacterName}";
         if (!Dispatcher.CheckAccess())
         {
             Dispatcher.Invoke(() => _currentWallpaperItem.Text = text);

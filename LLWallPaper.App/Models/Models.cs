@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using LLWallPaper.App.Utils;
 
 namespace LLWallPaper.App.Models;
 
@@ -63,6 +64,9 @@ public sealed class HistoryEntry
     public DateTimeOffset At { get; init; } = DateTimeOffset.UtcNow;
     public string Key { get; init; } = "";
     public string CardName { get; init; } = "";
+
+    [JsonIgnore]
+    public string CharacterName => CharacterMap.GetNameForId(Key);
 }
 
 public sealed class HistoryState

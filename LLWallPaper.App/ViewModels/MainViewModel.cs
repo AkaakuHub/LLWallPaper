@@ -16,6 +16,7 @@ public sealed class MainViewModel : ViewModelBase
 
     private string _statusText = "Ready";
     private string _currentCardName = "-";
+    private string _currentCharacterName = "その他";
     private string _currentCardId = "-";
     private string _currentSource = "-";
     private CardItem? _currentCard;
@@ -75,6 +76,12 @@ public sealed class MainViewModel : ViewModelBase
     {
         get => _currentCardId;
         set => SetProperty(ref _currentCardId, value);
+    }
+
+    public string CurrentCharacterName
+    {
+        get => _currentCharacterName;
+        set => SetProperty(ref _currentCharacterName, value);
     }
 
     public string CurrentSource
@@ -172,6 +179,7 @@ public sealed class MainViewModel : ViewModelBase
     {
         _currentCard = e.Card;
         CurrentCardName = e.Card.Name;
+        CurrentCharacterName = CharacterMap.GetNameForId(e.Card.Id);
         CurrentCardId = e.Card.Id;
         CurrentSource = e.Reason;
         CurrentIsFavorite = _favoritesStore.IsFavorite(e.Card.Id);

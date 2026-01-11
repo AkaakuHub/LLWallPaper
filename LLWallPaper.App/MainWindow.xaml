@@ -23,6 +23,8 @@
                     <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
                         <TextBlock Text="Name: " FontWeight="SemiBold"/>
                         <TextBlock Text="{Binding CurrentCardName}"/>
+                        <TextBlock Text="   Character: " FontWeight="SemiBold" Margin="12,0,0,0"/>
+                        <TextBlock Text="{Binding CurrentCharacterName}"/>
                         <TextBlock Text="   ID: " FontWeight="SemiBold" Margin="12,0,0,0"/>
                         <TextBlock Text="{Binding CurrentCardId}"/>
                         <TextBlock Text="   Source: " FontWeight="SemiBold" Margin="12,0,0,0"/>
@@ -76,6 +78,11 @@
                                 <GridViewColumn Width="280" DisplayMemberBinding="{Binding Name}">
                                     <GridViewColumn.Header>
                                         <GridViewColumnHeader Content="Name" Tag="Name" Click="OnCardsColumnHeaderClick"/>
+                                    </GridViewColumn.Header>
+                                </GridViewColumn>
+                                <GridViewColumn Width="140" DisplayMemberBinding="{Binding CharacterName}">
+                                    <GridViewColumn.Header>
+                                        <GridViewColumnHeader Content="Character" Tag="CharacterName" Click="OnCardsColumnHeaderClick"/>
                                     </GridViewColumn.Header>
                                 </GridViewColumn>
                                 <GridViewColumn Width="80" DisplayMemberBinding="{Binding IsFavorite}">
@@ -207,7 +214,7 @@
 
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="360"/>
+                            <ColumnDefinition Width="460"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
@@ -217,17 +224,22 @@
                                   Margin="0,0,16,8">
                             <ListView.View>
                                 <GridView>
-                                    <GridViewColumn Width="150" DisplayMemberBinding="{Binding At, StringFormat=yyyy-MM-dd HH:mm:ss}">
+                                    <GridViewColumn Width="140" DisplayMemberBinding="{Binding At, StringFormat=yyyy-MM-dd HH:mm:ss}">
                                         <GridViewColumn.Header>
                                             <GridViewColumnHeader Content="At"/>
                                         </GridViewColumn.Header>
                                     </GridViewColumn>
-                                    <GridViewColumn Width="80" DisplayMemberBinding="{Binding Key}">
+                                    <GridViewColumn Width="70" DisplayMemberBinding="{Binding Key}">
                                         <GridViewColumn.Header>
                                             <GridViewColumnHeader Content="Key"/>
                                         </GridViewColumn.Header>
                                     </GridViewColumn>
-                                    <GridViewColumn Width="140" DisplayMemberBinding="{Binding CardName}">
+                                    <GridViewColumn Width="120" DisplayMemberBinding="{Binding CharacterName}">
+                                        <GridViewColumn.Header>
+                                            <GridViewColumnHeader Content="Character"/>
+                                        </GridViewColumn.Header>
+                                    </GridViewColumn>
+                                    <GridViewColumn Width="120" DisplayMemberBinding="{Binding CardName}">
                                         <GridViewColumn.Header>
                                             <GridViewColumnHeader Content="Card"/>
                                         </GridViewColumn.Header>
@@ -245,10 +257,17 @@
                             <StackPanel Grid.Row="0">
                                 <controls:ImagePreview Width="443" Height="287" Margin="0,0,0,12"
                                                        ImagePath="{Binding History.SelectedImagePath}"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,12">
+                                    <Button Content="Copy Image" Width="120"
+                                            Command="{Binding History.CopyImageCommand}"/>
+                                    <Button Content="Open Detail" Width="120" Margin="8,0,0,0"
+                                            Command="{Binding History.OpenDetailCommand}"/>
+                                </StackPanel>
                             </StackPanel>
 
                             <Grid Grid.Row="1" Margin="0,4,0,0">
                                 <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
@@ -259,22 +278,20 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
 
-                                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
-                                    <Button Content="Copy Image" Width="120"
-                                            Command="{Binding History.CopyImageCommand}"/>
-                                    <Button Content="Open Detail" Width="120" Margin="8,0,0,0"
-                                            Command="{Binding History.OpenDetailCommand}"/>
-                                </StackPanel>
-
-                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Selected At" FontWeight="SemiBold" Margin="0,12,0,0"/>
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Selected At" FontWeight="SemiBold" Margin="0,0,0,0"/>
                                 <TextBlock Grid.Row="1" Grid.Column="1"
-                                           Text="{Binding History.SelectedEntry.At, StringFormat=yyyy-MM-dd HH:mm:ss}" Margin="0,12,0,0"/>
+                                           Text="{Binding History.SelectedEntry.At, StringFormat=yyyy-MM-dd HH:mm:ss}" Margin="0,0,0,0"/>
 
                                 <TextBlock Grid.Row="2" Grid.Column="0" Text="Selected Key" FontWeight="SemiBold" Margin="0,8,0,0"/>
                                 <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding History.SelectedEntry.Key}" Margin="0,8,0,0"/>
 
                                 <TextBlock Grid.Row="3" Grid.Column="0" Text="Selected Card" FontWeight="SemiBold" Margin="0,8,0,0"/>
                                 <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding History.SelectedEntry.CardName}" Margin="0,8,0,0"/>
+
+                                <TextBlock Grid.Row="4" Grid.Column="0" Text="Selected Character" FontWeight="SemiBold" Margin="0,8,0,0"/>
+                                <TextBlock Grid.Row="4" Grid.Column="1"
+                                           Text="{Binding History.SelectedEntry.CharacterName}"
+                                           Margin="0,8,0,0"/>
                             </Grid>
                         </Grid>
                     </Grid>

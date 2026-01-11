@@ -1,5 +1,6 @@
 using LLWallPaper.App.Models;
 using LLWallPaper.App.Stores;
+using LLWallPaper.App.Utils;
 
 namespace LLWallPaper.App.ViewModels;
 
@@ -19,6 +20,7 @@ public sealed class CardItemViewModel : ViewModelBase
     public string Name => Card.Name;
     public string ImageUrl => Card.ImageUrl;
     public string? ThumbnailUrl => Card.ThumbnailUrl;
+    public string CharacterName => CharacterMap.GetNameForId(Card.Id);
 
     public bool IsFavorite => _favoritesStore.IsFavorite(Card.Id);
     public bool IsBlocked => _favoritesStore.IsBlocked(Card.Id);
