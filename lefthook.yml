@@ -2,9 +2,9 @@ lefthook: tools/lefthook/lefthook.exe
 
 pre-commit:
   jobs:
-    - name: dotnet-format
+    - name: csharpier
       glob: "**/*.cs"
-      run: dotnet tool run dotnet-format -- LLWallPaper.sln
+      run: dotnet tool run csharpier -- format .
       stage_fixed: true
 
     - name: dotnet-lint

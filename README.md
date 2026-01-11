@@ -25,7 +25,7 @@ dotnet tool restore
 
 Format:
 ```
-dotnet tool run dotnet-format -- LLWallPaper.sln
+dotnet tool run csharpier -- format .
 ```
 
 Lint (Roslynator runs during build):
