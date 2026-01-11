@@ -6,9 +6,15 @@ public sealed class RotationService
 {
     private readonly Random _random = new();
 
-    public CardItem? PickNext(IReadOnlyList<CardItem> candidates, IReadOnlyCollection<string> recentKeys,
-        IReadOnlyCollection<string> favoriteKeys, IReadOnlyCollection<string> blockedKeys,
-        bool preferFavorites, bool excludeBlocked, bool excludeThirdEvolution)
+    public CardItem? PickNext(
+        IReadOnlyList<CardItem> candidates,
+        IReadOnlyCollection<string> recentKeys,
+        IReadOnlyCollection<string> favoriteKeys,
+        IReadOnlyCollection<string> blockedKeys,
+        bool preferFavorites,
+        bool excludeBlocked,
+        bool excludeThirdEvolution
+    )
     {
         IEnumerable<CardItem> pool = candidates;
         if (excludeBlocked && blockedKeys.Count > 0)
@@ -44,4 +50,3 @@ public sealed class RotationService
         return filtered[_random.Next(filtered.Count)];
     }
 }
-

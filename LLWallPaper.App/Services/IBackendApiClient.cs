@@ -6,4 +6,3 @@ public interface IBackendApiClient
 {
     Task<IReadOnlyList<CardItem>> GetCardsAsync(CancellationToken cancellationToken);
 }
-

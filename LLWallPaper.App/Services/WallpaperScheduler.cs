@@ -11,7 +11,11 @@ public sealed class WallpaperScheduler
     private readonly Func<Settings> _settingsProvider;
     private readonly AppLogger _logger;
 
-    public WallpaperScheduler(WallpaperUseCase useCase, Func<Settings> settingsProvider, AppLogger logger)
+    public WallpaperScheduler(
+        WallpaperUseCase useCase,
+        Func<Settings> settingsProvider,
+        AppLogger logger
+    )
     {
         _useCase = useCase;
         _settingsProvider = settingsProvider;
@@ -63,4 +67,3 @@ public sealed class WallpaperScheduler
         }
     }
 }
-

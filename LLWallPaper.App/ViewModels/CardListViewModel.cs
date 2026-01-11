@@ -25,7 +25,8 @@ public sealed class CardListViewModel : ViewModelBase
         CardCatalogService catalogService,
         FavoritesStore favoritesStore,
         WallpaperUseCase wallpaperUseCase,
-        Func<Settings> settingsProvider)
+        Func<Settings> settingsProvider
+    )
     {
         _catalogService = catalogService;
         _favoritesStore = favoritesStore;
@@ -34,9 +35,18 @@ public sealed class CardListViewModel : ViewModelBase
 
         Items = new ObservableCollection<CardItemViewModel>();
         FetchCommand = new AsyncRelayCommand(_ => FetchWithRetryAsync(0));
-        ApplyCommand = new AsyncRelayCommand(_ => ApplySelectedAsync(), _ => SelectedItem is not null);
-        ToggleFavoriteCommand = new RelayCommand(_ => ToggleFavorite(), _ => SelectedItem is not null);
-        ToggleBlockedCommand = new RelayCommand(_ => ToggleBlocked(), _ => SelectedItem is not null);
+        ApplyCommand = new AsyncRelayCommand(
+            _ => ApplySelectedAsync(),
+            _ => SelectedItem is not null
+        );
+        ToggleFavoriteCommand = new RelayCommand(
+            _ => ToggleFavorite(),
+            _ => SelectedItem is not null
+        );
+        ToggleBlockedCommand = new RelayCommand(
+            _ => ToggleBlocked(),
+            _ => SelectedItem is not null
+        );
 
         _catalogService.CatalogUpdated += (_, _) => ReloadItems();
     }
@@ -139,7 +149,12 @@ public sealed class CardListViewModel : ViewModelBase
         }
 
         var settings = _settingsProvider();
-        var result = await _wallpaperUseCase.ApplyCardAsync(SelectedItem.Card, settings, CancellationToken.None, "manual");
+        var result = await _wallpaperUseCase.ApplyCardAsync(
+            SelectedItem.Card,
+            settings,
+            CancellationToken.None,
+            "manual"
+        );
         StatusMessage = result.Message;
     }
 
@@ -180,4 +195,3 @@ public sealed class CardListViewModel : ViewModelBase
         }
     }
 }
-

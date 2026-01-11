@@ -59,26 +59,63 @@ public partial class App : System.Windows.Application
             var handler = new HttpClientHandler();
             handler.ServerCertificateCustomValidationCallback = (_, _, _, _) => true;
             var httpClient = new HttpClient(handler);
-            var backendClient = new BackendApiClient(httpClient, () => settings.BackendBaseUrl, logger);
+            var backendClient = new BackendApiClient(
+                httpClient,
+                () => settings.BackendBaseUrl,
+                logger
+            );
             var catalogService = new CardCatalogService(backendClient);
             var cacheStore = new CacheStore(httpClient, logger);
             var rotationService = new RotationService();
             var desktopAdapter = DesktopWallpaperAdapter.TryCreate(logger);
-            var wallpaperUseCase = new WallpaperUseCase(catalogService, rotationService, cacheStore, desktopAdapter, favoritesStore, historyStore, logger);
+            var wallpaperUseCase = new WallpaperUseCase(
+                catalogService,
+                rotationService,
+                cacheStore,
+                desktopAdapter,
+                favoritesStore,
+                historyStore,
+                logger
+            );
             var scheduler = new WallpaperScheduler(wallpaperUseCase, () => settings, logger);
             var startupRegistryService = new StartupRegistryService();
-            var cardDetailLinkService = new CardDetailLinkService(() => settings.BackendBaseUrl, logger);
+            var cardDetailLinkService = new CardDetailLinkService(
+                () => settings.BackendBaseUrl,
+                logger
+            );
 
-            var settingsViewModel = new SettingsViewModel(settings, settingsStore, scheduler, startupRegistryService, historyStore);
-            var cardListViewModel = new CardListViewModel(catalogService, favoritesStore, wallpaperUseCase, () => settings);
+            var settingsViewModel = new SettingsViewModel(
+                settings,
+                settingsStore,
+                scheduler,
+                startupRegistryService,
+                historyStore
+            );
+            var cardListViewModel = new CardListViewModel(
+                catalogService,
+                favoritesStore,
+                wallpaperUseCase,
+                () => settings
+            );
             var historyViewModel = new HistoryViewModel(
                 historyStore,
                 cardDetailLinkService,
                 catalogService,
                 favoritesStore,
                 wallpaperUseCase,
-                () => settings);
-            var mainViewModel = new MainViewModel(settings, settingsStore, favoritesStore, wallpaperUseCase, scheduler, cardListViewModel, settingsViewModel, historyViewModel, logger);
+                () => settings
+            );
+            var mainViewModel = new MainViewModel(
+                settings,
+                settingsStore,
+                favoritesStore,
+                wallpaperUseCase,
+                scheduler,
+                cardListViewModel,
+                settingsViewModel,
+                historyViewModel,
+                logger
+            );
 
             _mainViewModel = mainViewModel;
 
@@ -92,10 +129,7 @@ public partial class App : System.Windows.Application
                 startupRegistryService.Disable();
             }
 
-            _mainWindow = new MainWindow
-            {
-                DataContext = mainViewModel
-            };
+            _mainWindow = new MainWindow { DataContext = mainViewModel };
             MainWindow = _mainWindow;
             _mainWindow.Closing += OnMainWindowClosing;
             if (settings.StartMinimized)
@@ -179,7 +213,7 @@ public partial class App : System.Windows.Application
         {
             Icon = appIcon ?? System.Drawing.SystemIcons.Application,
             Visible = true,
-            Text = "LLWallPaper"
+            Text = "LLWallPaper",
         };
         _notifyIcon.ContextMenuStrip = menu;
         _notifyIcon.MouseClick += (_, args) =>
@@ -218,10 +252,15 @@ public partial class App : System.Windows.Application
         Shutdown();
     }
 
-    private void OnMainViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private void OnMainViewModelPropertyChanged(
+        object? sender,
+        System.ComponentModel.PropertyChangedEventArgs e
+    )
     {
-        if (e.PropertyName == nameof(MainViewModel.CurrentCardName)
-            || e.PropertyName == nameof(MainViewModel.CurrentCharacterName))
+        if (
+            e.PropertyName == nameof(MainViewModel.CurrentCardName)
+            || e.PropertyName == nameof(MainViewModel.CurrentCharacterName)
+        )
         {
             UpdateTrayCurrentWallpaper();
         }
@@ -234,7 +273,8 @@ public partial class App : System.Windows.Application
             return;
         }
 
-        var text = $"Current: {_mainViewModel.CurrentCardName} / {_mainViewModel.CurrentCharacterName}";
+        var text =
+            $"Current: {_mainViewModel.CurrentCardName} / {_mainViewModel.CurrentCharacterName}";
         if (!Dispatcher.CheckAccess())
         {
             Dispatcher.Invoke(() => _currentWallpaperItem.Text = text);

@@ -55,4 +55,3 @@ public partial class MainWindow : Window
         view.Refresh();
     }
 }
-

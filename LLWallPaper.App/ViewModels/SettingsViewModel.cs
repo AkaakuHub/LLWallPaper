@@ -13,7 +13,13 @@ public sealed class SettingsViewModel : ViewModelBase
     private readonly HistoryStore _historyStore;
     private readonly Settings _settings;
 
-    public SettingsViewModel(Settings settings, SettingsStore settingsStore, WallpaperScheduler scheduler, StartupRegistryService startupRegistryService, HistoryStore historyStore)
+    public SettingsViewModel(
+        Settings settings,
+        SettingsStore settingsStore,
+        WallpaperScheduler scheduler,
+        StartupRegistryService startupRegistryService,
+        HistoryStore historyStore
+    )
     {
         _settings = settings;
         _settingsStore = settingsStore;

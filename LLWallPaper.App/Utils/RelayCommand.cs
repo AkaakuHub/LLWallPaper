@@ -34,7 +34,8 @@ public sealed class AsyncRelayCommand : ICommand
         _canExecute = canExecute;
     }
 
-    public bool CanExecute(object? parameter) => !_isRunning && (_canExecute?.Invoke(parameter) ?? true);
+    public bool CanExecute(object? parameter) =>
+        !_isRunning && (_canExecute?.Invoke(parameter) ?? true);
 
     public async void Execute(object? parameter)
     {
@@ -60,4 +61,3 @@ public sealed class AsyncRelayCommand : ICommand
 
     public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 }
-

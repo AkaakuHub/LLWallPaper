@@ -42,11 +42,9 @@ public sealed class CardDetailLinkService
 
         try
         {
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = detailUri.ToString(),
-                UseShellExecute = true
-            });
+            Process.Start(
+                new ProcessStartInfo { FileName = detailUri.ToString(), UseShellExecute = true }
+            );
             return true;
         }
         catch (Exception ex)

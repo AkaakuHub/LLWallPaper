@@ -27,7 +27,8 @@ public sealed class FavoritesStore
         try
         {
             var json = File.ReadAllText(AppPaths.FavoritesPath);
-            _state = JsonSerializer.Deserialize<Favorites>(json, JsonOptions.Default) ?? new Favorites();
+            _state =
+                JsonSerializer.Deserialize<Favorites>(json, JsonOptions.Default) ?? new Favorites();
         }
         catch (Exception ex)
         {
@@ -79,4 +80,3 @@ public sealed class FavoritesStore
         File.WriteAllText(AppPaths.FavoritesPath, json);
     }
 }
-

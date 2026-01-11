@@ -32,17 +32,25 @@ public sealed class BackendApiClient : IBackendApiClient
             using var response = await _httpClient.GetAsync(requestUrl, cancellationToken);
             if (!response.IsSuccessStatusCode)
             {
-                throw new HttpRequestException($"Backend returned {response.StatusCode} for {requestUrl}.");
+                throw new HttpRequestException(
+                    $"Backend returned {response.StatusCode} for {requestUrl}."
+                );
             }
 
             await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-            using var doc = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
+            using var doc = await JsonDocument.ParseAsync(
+                stream,
+                cancellationToken: cancellationToken
+            );
             if (doc.RootElement.ValueKind == JsonValueKind.Array)
             {
                 return ParseArray(doc.RootElement, baseUrl);
             }
 
-            if (doc.RootElement.TryGetProperty("cards", out var cards) && cards.ValueKind == JsonValueKind.Array)
+            if (
+                doc.RootElement.TryGetProperty("cards", out var cards)
+                && cards.ValueKind == JsonValueKind.Array
+            )
             {
                 return ParseArray(cards, baseUrl);
             }
@@ -69,14 +77,16 @@ public sealed class BackendApiClient : IBackendApiClient
             {
                 JsonValueKind.String => idProp.GetString() ?? string.Empty,
                 JsonValueKind.Number => idProp.GetRawText(),
-                _ => idProp.GetRawText()
+                _ => idProp.GetRawText(),
             };
             if (string.IsNullOrWhiteSpace(id))
             {
                 continue;
             }
 
-            var name = element.TryGetProperty("name", out var nameProp) ? nameProp.GetString() ?? id : id;
+            var name = element.TryGetProperty("name", out var nameProp)
+                ? nameProp.GetString() ?? id
+                : id;
             var hasFull = HasAssetFlag(element, "full");
             if (!hasFull)
             {
@@ -86,13 +96,15 @@ public sealed class BackendApiClient : IBackendApiClient
             var imageUrl = $"{baseUrl}/api/card-illustrations/image/{id}?type=full";
             var thumbUrl = $"{baseUrl}/api/card-illustrations/image/{id}?type=half";
 
-            list.Add(new CardItem
-            {
-                Id = id,
-                Name = name,
-                ImageUrl = imageUrl,
-                ThumbnailUrl = thumbUrl
-            });
+            list.Add(
+                new CardItem
+                {
+                    Id = id,
+                    Name = name,
+                    ImageUrl = imageUrl,
+                    ThumbnailUrl = thumbUrl,
+                }
+            );
         }
 
         return list;
@@ -120,8 +132,7 @@ public sealed class BackendApiClient : IBackendApiClient
             JsonValueKind.True => true,
             JsonValueKind.False => false,
             JsonValueKind.String => bool.TryParse(flag.GetString(), out var parsed) && parsed,
-            _ => false
+            _ => false,
         };
     }
 }
-

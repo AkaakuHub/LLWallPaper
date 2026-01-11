@@ -58,9 +58,7 @@ public sealed class HistoryStore
 
     public IReadOnlyList<string> GetRecentKeys(int count)
     {
-        return GetRecentEntries(count)
-            .Select(entry => entry.Key)
-            .ToList();
+        return GetRecentEntries(count).Select(entry => entry.Key).ToList();
     }
 
     public IReadOnlyList<HistoryEntry> GetRecentEntries(int count)
@@ -109,7 +107,9 @@ public sealed class HistoryStore
             try
             {
                 var json = File.ReadAllText(AppPaths.HistoryPath);
-                var state = JsonSerializer.Deserialize<HistoryState>(json, JsonOptions.Default) ?? new HistoryState();
+                var state =
+                    JsonSerializer.Deserialize<HistoryState>(json, JsonOptions.Default)
+                    ?? new HistoryState();
                 state.BasePath = ResolveBasePath(state.BasePath);
                 state.Entries ??= new List<HistoryEntry>();
                 return state;

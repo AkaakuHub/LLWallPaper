@@ -16,7 +16,11 @@ public sealed class CacheStore
         _logger = logger;
     }
 
-    public async Task<string?> EnsureLocalAsync(CardItem card, int cacheMaxMb, IReadOnlyCollection<string> protectedPaths)
+    public async Task<string?> EnsureLocalAsync(
+        CardItem card,
+        int cacheMaxMb,
+        IReadOnlyCollection<string> protectedPaths
+    )
     {
         AppPaths.EnsureDirectories();
         var path = AppPaths.GetCachePathForKey(card.Id);
@@ -69,7 +73,9 @@ public sealed class CacheStore
         }
 
         var files = dir.GetFiles()
-            .Where(file => !protectedPaths.Contains(file.FullName, StringComparer.OrdinalIgnoreCase))
+            .Where(file =>
+                !protectedPaths.Contains(file.FullName, StringComparer.OrdinalIgnoreCase)
+            )
             .OrderBy(file => file.LastWriteTimeUtc)
             .ToList();
 

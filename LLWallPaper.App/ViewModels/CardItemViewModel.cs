@@ -31,4 +31,3 @@ public sealed class CardItemViewModel : ViewModelBase
         RaisePropertyChanged(nameof(IsBlocked));
     }
 }
-

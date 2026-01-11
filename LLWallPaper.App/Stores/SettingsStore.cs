@@ -27,7 +27,8 @@ public sealed class SettingsStore
         try
         {
             var json = File.ReadAllText(AppPaths.SettingsPath);
-            return JsonSerializer.Deserialize<Settings>(json, JsonOptions.Default) ?? new Settings();
+            return JsonSerializer.Deserialize<Settings>(json, JsonOptions.Default)
+                ?? new Settings();
         }
         catch (Exception ex)
         {
@@ -43,4 +44,3 @@ public sealed class SettingsStore
         File.WriteAllText(AppPaths.SettingsPath, json);
     }
 }
-

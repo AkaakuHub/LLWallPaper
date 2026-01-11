@@ -32,7 +32,8 @@ public sealed class HistoryViewModel : ViewModelBase
         CardCatalogService catalogService,
         FavoritesStore favoritesStore,
         WallpaperUseCase wallpaperUseCase,
-        Func<Settings> settingsProvider)
+        Func<Settings> settingsProvider
+    )
     {
         _historyStore = historyStore;
         _cardDetailLinkService = cardDetailLinkService;
@@ -44,7 +45,10 @@ public sealed class HistoryViewModel : ViewModelBase
         Items.CollectionChanged += (_, _) => RaisePropertyChanged(nameof(TotalCount));
         RefreshCommand = new RelayCommand(_ => Refresh(), _ => !IsBusy);
         CopyImageCommand = new RelayCommand(_ => CopySelectedImage(), _ => HasSelectedImage);
-        OpenDetailCommand = new RelayCommand(_ => OpenSelectedDetail(), _ => CanOpenSelectedDetail());
+        OpenDetailCommand = new RelayCommand(
+            _ => OpenSelectedDetail(),
+            _ => CanOpenSelectedDetail()
+        );
         ApplyCommand = new AsyncRelayCommand(_ => ApplySelectedAsync(), _ => CanOperateSelected());
         ToggleFavoriteCommand = new RelayCommand(_ => ToggleFavorite(), _ => CanOperateSelected());
         ToggleBlockedCommand = new RelayCommand(_ => ToggleBlocked(), _ => CanOperateSelected());
@@ -127,9 +131,7 @@ public sealed class HistoryViewModel : ViewModelBase
             Items.Clear();
             var state = _historyStore.GetState();
             BasePath = state.BasePath;
-            var entries = state.Entries
-                .OrderByDescending(entry => entry.At)
-                .ToList();
+            var entries = state.Entries.OrderByDescending(entry => entry.At).ToList();
 
             var previous = SelectedEntry;
             foreach (var entry in entries)
@@ -142,9 +144,10 @@ public sealed class HistoryViewModel : ViewModelBase
                 SelectedEntry = previous is null
                     ? Items[0]
                     : Items.FirstOrDefault(item =>
-                        item.At == previous.At &&
-                        item.Key == previous.Key &&
-                        item.CardName == previous.CardName) ?? Items[0];
+                        item.At == previous.At
+                        && item.Key == previous.Key
+                        && item.CardName == previous.CardName
+                    ) ?? Items[0];
             }
             else
             {
@@ -201,8 +204,9 @@ public sealed class HistoryViewModel : ViewModelBase
             return;
         }
 
-        var card = _catalogService.Current
-            .FirstOrDefault(item => string.Equals(item.Id, _selectedEntry.Key, StringComparison.Ordinal));
+        var card = _catalogService.Current.FirstOrDefault(item =>
+            string.Equals(item.Id, _selectedEntry.Key, StringComparison.Ordinal)
+        );
         if (card is null)
         {
             StatusMessage = "Card not found in catalog. Please fetch cards first.";
@@ -210,7 +214,12 @@ public sealed class HistoryViewModel : ViewModelBase
         }
 
         var settings = _settingsProvider();
-        var result = await _wallpaperUseCase.ApplyCardAsync(card, settings, CancellationToken.None, "history");
+        var result = await _wallpaperUseCase.ApplyCardAsync(
+            card,
+            settings,
+            CancellationToken.None,
+            "history"
+        );
         StatusMessage = result.Message;
     }
 

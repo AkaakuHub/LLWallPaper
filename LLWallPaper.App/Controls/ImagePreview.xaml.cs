@@ -8,7 +8,8 @@ public partial class ImagePreview : System.Windows.Controls.UserControl
         nameof(ImagePath),
         typeof(string),
         typeof(ImagePreview),
-        new PropertyMetadata(string.Empty));
+        new PropertyMetadata(string.Empty)
+    );
 
     public ImagePreview()
     {

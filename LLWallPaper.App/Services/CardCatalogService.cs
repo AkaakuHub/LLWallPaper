@@ -33,9 +33,10 @@ public sealed class CardCatalogService
 
         var term = query.Trim();
         return _cards
-            .Where(card => card.Id.Contains(term, StringComparison.OrdinalIgnoreCase)
-                || card.Name.Contains(term, StringComparison.OrdinalIgnoreCase))
+            .Where(card =>
+                card.Id.Contains(term, StringComparison.OrdinalIgnoreCase)
+                || card.Name.Contains(term, StringComparison.OrdinalIgnoreCase)
+            )
             .ToList();
     }
 }
-

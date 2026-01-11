@@ -32,7 +32,8 @@ public sealed class MainViewModel : ViewModelBase
         CardListViewModel cardListViewModel,
         SettingsViewModel settingsViewModel,
         HistoryViewModel historyViewModel,
-        AppLogger logger)
+        AppLogger logger
+    )
     {
         _settings = settings;
         _settingsStore = settingsStore;
@@ -47,8 +48,14 @@ public sealed class MainViewModel : ViewModelBase
 
         NextCommand = new AsyncRelayCommand(_ => ApplyNextAsync());
         ToggleAutoCommand = new RelayCommand(_ => ToggleAuto());
-        ToggleCurrentFavoriteCommand = new RelayCommand(_ => ToggleCurrentFavorite(), _ => _currentCard is not null);
-        ToggleCurrentBlockedCommand = new RelayCommand(_ => ToggleCurrentBlocked(), _ => _currentCard is not null);
+        ToggleCurrentFavoriteCommand = new RelayCommand(
+            _ => ToggleCurrentFavorite(),
+            _ => _currentCard is not null
+        );
+        ToggleCurrentBlockedCommand = new RelayCommand(
+            _ => ToggleCurrentBlocked(),
+            _ => _currentCard is not null
+        );
         ExitCommand = new RelayCommand(_ => ExitRequested?.Invoke(this, EventArgs.Empty));
 
         _wallpaperUseCase.WallpaperChanged += OnWallpaperChanged;
@@ -190,4 +197,3 @@ public sealed class MainViewModel : ViewModelBase
         History.Refresh();
     }
 }
-

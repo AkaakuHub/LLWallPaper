@@ -9,7 +9,9 @@ public static class AppPaths
     {
         get
         {
-            var basePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var basePath = Environment.GetFolderPath(
+                Environment.SpecialFolder.LocalApplicationData
+            );
             return Path.Combine(basePath, "LLWallPaper");
         }
     }
@@ -39,4 +41,3 @@ public static class AppPaths
         Directory.CreateDirectory(CacheRoot);
     }
 }
-

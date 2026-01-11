@@ -77,4 +77,3 @@ public sealed class HistoryState
     [JsonPropertyName("entries")]
     public List<HistoryEntry> Entries { get; set; } = new();
 }
-

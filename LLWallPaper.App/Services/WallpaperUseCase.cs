@@ -21,7 +21,8 @@ public sealed class WallpaperUseCase
         DesktopWallpaperAdapter? desktopWallpaperAdapter,
         FavoritesStore favoritesStore,
         HistoryStore historyStore,
-        AppLogger logger)
+        AppLogger logger
+    )
     {
         _catalogService = catalogService;
         _rotationService = rotationService;
@@ -34,7 +35,10 @@ public sealed class WallpaperUseCase
 
     public event EventHandler<WallpaperChangedEventArgs>? WallpaperChanged;
 
-    public async Task<WallpaperResult> ApplyNextAsync(Settings settings, CancellationToken cancellationToken)
+    public async Task<WallpaperResult> ApplyNextAsync(
+        Settings settings,
+        CancellationToken cancellationToken
+    )
     {
         var candidates = _catalogService.Current;
         if (candidates.Count == 0)
@@ -50,7 +54,8 @@ public sealed class WallpaperUseCase
             _favoritesStore.BlockedKeys,
             settings.PreferFavorites,
             settings.ExcludeBlocked,
-            settings.ExcludeThirdEvolution);
+            settings.ExcludeThirdEvolution
+        );
 
         if (card is null)
         {
@@ -60,13 +65,23 @@ public sealed class WallpaperUseCase
         return await ApplyCardAsync(card, settings, cancellationToken, "auto");
     }
 
-    public async Task<WallpaperResult> ApplyCardAsync(CardItem card, Settings settings, CancellationToken cancellationToken, string reason)
+    public async Task<WallpaperResult> ApplyCardAsync(
+        CardItem card,
+        Settings settings,
+        CancellationToken cancellationToken,
+        string reason
+    )
     {
-        var protectedPaths = _historyStore.GetRecentLocalPaths(settings.RecentExcludeCount)
+        var protectedPaths = _historyStore
+            .GetRecentLocalPaths(settings.RecentExcludeCount)
             .Where(path => !string.IsNullOrWhiteSpace(path))
             .ToList();
 
-        var localPath = await _cacheStore.EnsureLocalAsync(card, settings.CacheMaxMb, protectedPaths);
+        var localPath = await _cacheStore.EnsureLocalAsync(
+            card,
+            settings.CacheMaxMb,
+            protectedPaths
+        );
         if (string.IsNullOrWhiteSpace(localPath))
         {
             return new WallpaperResult(false, "Download failed.");
@@ -79,18 +94,24 @@ public sealed class WallpaperUseCase
 
         if (!_desktopWallpaperAdapter.TrySetWallpaper(localPath, out var error))
         {
-            _logger.Error("SetWallpaper failed.", error is null ? null : new InvalidOperationException(error));
+            _logger.Error(
+                "SetWallpaper failed.",
+                error is null ? null : new InvalidOperationException(error)
+            );
             return new WallpaperResult(false, "SetWallpaper failed.");
         }
 
         try
         {
-            _historyStore.Append(new HistoryEntry
-            {
-                At = DateTimeOffset.Now,
-                Key = card.Id,
-                CardName = card.Name
-            }, settings.HistoryMaxEntries);
+            _historyStore.Append(
+                new HistoryEntry
+                {
+                    At = DateTimeOffset.Now,
+                    Key = card.Id,
+                    CardName = card.Name,
+                },
+                settings.HistoryMaxEntries
+            );
 
             WallpaperChanged?.Invoke(this, new WallpaperChangedEventArgs(card, localPath, reason));
             return new WallpaperResult(true, "Wallpaper updated.");
@@ -101,7 +122,6 @@ public sealed class WallpaperUseCase
             return new WallpaperResult(true, "Wallpaper updated (with notification error).");
         }
     }
-
 }
 
 public sealed class WallpaperChangedEventArgs : EventArgs
@@ -119,4 +139,3 @@ public sealed class WallpaperChangedEventArgs : EventArgs
 }
 
 public readonly record struct WallpaperResult(bool Success, string Message);
-
