@@ -21,6 +21,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Extract version from tag
+        id: version
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          $version = $tag.TrimStart('v')
+          "value=$version" >> $Env:GITHUB_OUTPUT
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
@@ -29,14 +37,16 @@ jobs:
       - name: Restore
         run: dotnet restore LLWallPaper.sln
 
-      - name: Publish (framework-dependent)
+      - name: Publish (self-contained)
         run: >-
           dotnet publish .\LLWallPaper.App\LLWallPaper.App.csproj
           -c Release
           -r win-x64
-          --self-contained false
+          --self-contained true
           -p:DebugType=none
           -p:DebugSymbols=false
+          -p:Version=${{ steps.version.outputs.value }}
+          -o publish
 
       - name: Remove PDBs
         shell: pwsh
@@ -44,30 +54,31 @@ jobs:
           $publish = 'LLWallPaper.App\bin\Release\net10.0-windows\win-x64\publish'
           Get-ChildItem -Path $publish -Filter *.pdb -Recurse | Remove-Item -Force
 
-      - name: Create zip
+      - name: Install Velopack CLI
+        run: dotnet tool install -g vpk --version 0.0.1298
+
+      - name: Download previous releases (for delta)
         shell: pwsh
-        run: |
-          $publish = 'LLWallPaper.App\bin\Release\net10.0-windows\win-x64\publish'
-          if (Test-Path 'LLWallPaper.zip') { Remove-Item 'LLWallPaper.zip' }
-          Compress-Archive -Path "$publish\*" -DestinationPath 'LLWallPaper.zip'
+        run: >-
+          vpk download github
+          --repoUrl https://github.com/${{ github.repository }}
+          --token ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install Inno Setup
-        run: choco install innosetup --no-progress -y
-
-      - name: Build installer (Inno Setup)
+      - name: Pack Velopack release
         shell: pwsh
-        run: |
-          & 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' 'installer\LLWallPaper.iss'
+        run: >-
+          vpk pack
+          --packId AkaakuHub.LLWallPaper
+          --packVersion ${{ steps.version.outputs.value }}
+          --packDir publish
+          --mainExe LLWallPaper.App.exe
 
-      - name: Create GitHub Release (attach zip + installer)
-        uses: softprops/action-gh-release@v1
-        with:
-          name: ${{ github.ref_name }}
-          tag_name: ${{ github.ref_name }}
-          draft: false
-          prerelease: false
-          files: |
-            LLWallPaper.zip
-            installer/Output/LLWallPaper-Installer.exe
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload Velopack release to GitHub
+        shell: pwsh
+        run: >-
+          vpk upload github
+          --repoUrl https://github.com/${{ github.repository }}
+          --token ${{ secrets.GITHUB_TOKEN }}
+          --publish
+          --releaseName "v${{ steps.version.outputs.value }}"
+          --tag v${{ steps.version.outputs.value }}

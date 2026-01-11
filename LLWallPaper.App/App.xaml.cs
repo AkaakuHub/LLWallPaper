@@ -7,6 +7,8 @@ using LLWallPaper.App.Services;
 using LLWallPaper.App.Stores;
 using LLWallPaper.App.Utils;
 using LLWallPaper.App.ViewModels;
+using Velopack;
+using Velopack.Sources;
 using WinForms = System.Windows.Forms;
 
 namespace LLWallPaper.App;
@@ -18,6 +20,16 @@ public partial class App : System.Windows.Application
     private MainViewModel? _mainViewModel;
     private bool _isExitRequested;
     private WinForms.ToolStripMenuItem? _currentWallpaperItem;
+    private AppLogger? _logger;
+
+    [STAThread]
+    public static void Main()
+    {
+        VelopackApp.Build().Run();
+        var app = new App();
+        app.InitializeComponent();
+        app.Run();
+    }
 
     protected override async void OnStartup(StartupEventArgs e)
     {
@@ -26,6 +38,7 @@ public partial class App : System.Windows.Application
         AppPaths.EnsureDirectories();
 
         var logger = new AppLogger();
+        _logger = logger;
         logger.Info("Startup begin.");
 
         try
@@ -145,6 +158,7 @@ public partial class App : System.Windows.Application
             InitializeTrayIcon();
 
             await mainViewModel.InitializeAsync();
+            _ = CheckForUpdatesAsync();
             logger.Info("Startup completed.");
         }
         catch (Exception ex)
@@ -282,5 +296,44 @@ public partial class App : System.Windows.Application
         }
 
         _currentWallpaperItem.Text = text;
+    }
+
+    private async Task CheckForUpdatesAsync()
+    {
+        try
+        {
+            var manager = new UpdateManager(
+                new GithubSource("https://github.com/AkaakuHub/LLWallPaper", null, false, null)
+            );
+            if (!manager.IsInstalled)
+            {
+                return;
+            }
+
+            var update = await manager.CheckForUpdatesAsync();
+            if (update is null)
+            {
+                return;
+            }
+
+            var result = System.Windows.MessageBox.Show(
+                "Update available. Install now?",
+                "LLWallPaper Update",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question,
+                MessageBoxResult.Yes
+            );
+            if (result != MessageBoxResult.Yes)
+            {
+                return;
+            }
+
+            await manager.DownloadUpdatesAsync(update);
+            manager.ApplyUpdatesAndRestart(update);
+        }
+        catch (Exception ex)
+        {
+            _logger?.Error("Update check failed.", ex);
+        }
     }
 }

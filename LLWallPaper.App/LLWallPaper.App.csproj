@@ -7,9 +7,16 @@
         <UseWPF>true</UseWPF>
         <UseWindowsForms>true</UseWindowsForms>
         <ApplicationIcon>..\installer\icon\llwallpaper.ico</ApplicationIcon>
+        <StartupObject>LLWallPaper.App.App</StartupObject>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Roslynator.Analyzers" Version="4.15.0" PrivateAssets="all" />
+        <PackageReference Include="Velopack" Version="0.0.1298" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ApplicationDefinition Remove="App.xaml" />
+        <Page Include="App.xaml" />
     </ItemGroup>
 </Project>
