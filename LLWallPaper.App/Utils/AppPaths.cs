@@ -10,14 +10,13 @@ public static class AppPaths
         get
         {
             var basePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            return Path.Combine(basePath, "AkaakuHub", "LLWallPaper");
+            return Path.Combine(basePath, "LLWallPaper");
         }
     }
 
     public static string SettingsPath => Path.Combine(Root, "settings.json");
     public static string FavoritesPath => Path.Combine(Root, "favorites.json");
     public static string HistoryPath => Path.Combine(Root, "history.json");
-    public static string LegacyHistoryPath => Path.Combine(Root, "history.jsonl");
     public static string LogPath => Path.Combine(Root, "logs", "app.log");
     public static string CacheRoot => Path.Combine(Root, "cache", "images");
 

@@ -109,11 +109,6 @@ public sealed class HistoryStore
             try
             {
                 var json = File.ReadAllText(AppPaths.HistoryPath);
-                if (IsLegacyHistoryJson(json))
-                {
-                    return IgnoreLegacyHistoryJson();
-                }
-
                 var state = JsonSerializer.Deserialize<HistoryState>(json, JsonOptions.Default) ?? new HistoryState();
                 state.BasePath = ResolveBasePath(state.BasePath);
                 state.Entries ??= new List<HistoryEntry>();
@@ -137,58 +132,6 @@ public sealed class HistoryStore
         state.BasePath = ResolveBasePath(state.BasePath);
         var json = JsonSerializer.Serialize(state, JsonOptions.Default);
         File.WriteAllText(AppPaths.HistoryPath, json);
-    }
-
-    private HistoryState IgnoreLegacyHistoryJson()
-    {
-        try
-        {
-            var backupPath = AppPaths.HistoryPath + ".bak";
-            File.Move(AppPaths.HistoryPath, backupPath, true);
-        }
-        catch (Exception ex)
-        {
-            _logger.Error("Failed to backup legacy history.json.", ex);
-        }
-
-        var empty = new HistoryState { BasePath = ResolveBasePath(string.Empty) };
-        SaveState(empty);
-        return empty;
-    }
-
-    private static bool IsLegacyHistoryJson(string json)
-    {
-        try
-        {
-            using var doc = JsonDocument.Parse(json);
-            var root = doc.RootElement;
-            if (root.ValueKind != JsonValueKind.Object)
-            {
-                return false;
-            }
-
-            if (root.TryGetProperty("entries", out var entries) && entries.ValueKind == JsonValueKind.Array)
-            {
-                foreach (var entry in entries.EnumerateArray())
-                {
-                    if (entry.ValueKind != JsonValueKind.Object)
-                    {
-                        continue;
-                    }
-
-                    if (entry.TryGetProperty("fileName", out _) || entry.TryGetProperty("result", out _))
-                    {
-                        return true;
-                    }
-                }
-            }
-        }
-        catch
-        {
-            return false;
-        }
-
-        return false;
     }
 
     private static string ResolveBasePath(string basePath)
