@@ -187,15 +187,20 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <Grid Grid.Row="0">
+                    <Grid Grid.Row="0" Margin="0,0,0,8">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0" Orientation="Horizontal">
-                            <TextBlock Text="Base Path" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding History.BasePath}" Margin="8,0,0,0" TextWrapping="Wrap"/>
-                        </StackPanel>
+                        <Grid Grid.Column="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Base Path" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="{Binding History.BasePath}" Margin="8,0,0,0"
+                                       TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                        </Grid>
                         <Button Grid.Column="1" Content="Refresh" Width="96"
                                 Command="{Binding History.RefreshCommand}"/>
                     </Grid>
@@ -209,7 +214,7 @@
                         <ListView Grid.Column="0" ItemsSource="{Binding History.Items}"
                                   SelectedItem="{Binding History.SelectedEntry}"
                                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                  Margin="0,8,16,0">
+                                  Margin="0,0,16,8">
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn Width="150" DisplayMemberBinding="{Binding At, StringFormat=yyyy-MM-dd HH:mm:ss}">
@@ -231,11 +236,18 @@
                             </ListView.View>
                         </ListView>
 
-                        <StackPanel Grid.Column="1" Margin="0,8,0,0">
-                            <controls:ImagePreview Width="520" Height="337" Margin="0,0,0,12"
-                                                   ImagePath="{Binding History.SelectedImagePath}"/>
+                        <Grid Grid.Column="1" Margin="0,0,0,8">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
 
-                            <Grid Margin="0,4,0,0">
+                            <StackPanel Grid.Row="0">
+                                <controls:ImagePreview Width="443" Height="287" Margin="0,0,0,12"
+                                                       ImagePath="{Binding History.SelectedImagePath}"/>
+                            </StackPanel>
+
+                            <Grid Grid.Row="1" Margin="0,4,0,0">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
@@ -264,11 +276,27 @@
                                 <TextBlock Grid.Row="3" Grid.Column="0" Text="Selected Card" FontWeight="SemiBold" Margin="0,8,0,0"/>
                                 <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding History.SelectedEntry.CardName}" Margin="0,8,0,0"/>
                             </Grid>
-                        </StackPanel>
+                        </Grid>
                     </Grid>
 
-                    <TextBlock Grid.Row="2" VerticalAlignment="Center"
-                               Text="{Binding History.StatusMessage}"/>
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Orientation="Horizontal">
+                            <Button Content="Apply" Width="96" Margin="0,0,8,0"
+                                    Command="{Binding History.ApplyCommand}"/>
+                            <Button Content="Toggle Favorite" Width="140" Margin="0,0,8,0"
+                                    Command="{Binding History.ToggleFavoriteCommand}"/>
+                            <Button Content="Toggle Blocked" Width="140"
+                                    Command="{Binding History.ToggleBlockedCommand}"/>
+                        </StackPanel>
+
+                        <TextBlock Grid.Column="1" VerticalAlignment="Center"
+                                   Text="{Binding History.StatusMessage}"/>
+                    </Grid>
                 </Grid>
             </TabItem>
         </TabControl>

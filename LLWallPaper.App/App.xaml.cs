@@ -71,7 +71,13 @@ public partial class App : System.Windows.Application
 
             var settingsViewModel = new SettingsViewModel(settings, settingsStore, scheduler, startupRegistryService, historyStore);
             var cardListViewModel = new CardListViewModel(catalogService, favoritesStore, wallpaperUseCase, () => settings);
-            var historyViewModel = new HistoryViewModel(historyStore, cardDetailLinkService);
+            var historyViewModel = new HistoryViewModel(
+                historyStore,
+                cardDetailLinkService,
+                catalogService,
+                favoritesStore,
+                wallpaperUseCase,
+                () => settings);
             var mainViewModel = new MainViewModel(settings, settingsStore, favoritesStore, wallpaperUseCase, scheduler, cardListViewModel, settingsViewModel, historyViewModel, logger);
 
             _mainViewModel = mainViewModel;

@@ -1,6 +1,8 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using LLWallPaper.App.Models;
 using LLWallPaper.App.Services;
@@ -13,6 +15,10 @@ public sealed class HistoryViewModel : ViewModelBase
 {
     private readonly HistoryStore _historyStore;
     private readonly CardDetailLinkService _cardDetailLinkService;
+    private readonly CardCatalogService _catalogService;
+    private readonly FavoritesStore _favoritesStore;
+    private readonly WallpaperUseCase _wallpaperUseCase;
+    private readonly Func<Settings> _settingsProvider;
     private string _basePath = string.Empty;
     private HistoryEntry? _selectedEntry;
     private string _selectedImagePath = string.Empty;
@@ -20,15 +26,28 @@ public sealed class HistoryViewModel : ViewModelBase
     private string _statusMessage = "Ready";
     private bool _isBusy;
 
-    public HistoryViewModel(HistoryStore historyStore, CardDetailLinkService cardDetailLinkService)
+    public HistoryViewModel(
+        HistoryStore historyStore,
+        CardDetailLinkService cardDetailLinkService,
+        CardCatalogService catalogService,
+        FavoritesStore favoritesStore,
+        WallpaperUseCase wallpaperUseCase,
+        Func<Settings> settingsProvider)
     {
         _historyStore = historyStore;
         _cardDetailLinkService = cardDetailLinkService;
+        _catalogService = catalogService;
+        _favoritesStore = favoritesStore;
+        _wallpaperUseCase = wallpaperUseCase;
+        _settingsProvider = settingsProvider;
         Items = new ObservableCollection<HistoryEntry>();
         Items.CollectionChanged += (_, _) => RaisePropertyChanged(nameof(TotalCount));
         RefreshCommand = new RelayCommand(_ => Refresh(), _ => !IsBusy);
         CopyImageCommand = new RelayCommand(_ => CopySelectedImage(), _ => HasSelectedImage);
         OpenDetailCommand = new RelayCommand(_ => OpenSelectedDetail(), _ => CanOpenSelectedDetail());
+        ApplyCommand = new AsyncRelayCommand(_ => ApplySelectedAsync(), _ => CanOperateSelected());
+        ToggleFavoriteCommand = new RelayCommand(_ => ToggleFavorite(), _ => CanOperateSelected());
+        ToggleBlockedCommand = new RelayCommand(_ => ToggleBlocked(), _ => CanOperateSelected());
     }
 
     public ObservableCollection<HistoryEntry> Items { get; }
@@ -53,6 +72,9 @@ public sealed class HistoryViewModel : ViewModelBase
             SetProperty(ref _selectedEntry, value);
             UpdateSelectedImage();
             OpenDetailCommand.RaiseCanExecuteChanged();
+            ApplyCommand.RaiseCanExecuteChanged();
+            ToggleFavoriteCommand.RaiseCanExecuteChanged();
+            ToggleBlockedCommand.RaiseCanExecuteChanged();
         }
     }
 
@@ -93,6 +115,9 @@ public sealed class HistoryViewModel : ViewModelBase
     public RelayCommand RefreshCommand { get; }
     public RelayCommand CopyImageCommand { get; }
     public RelayCommand OpenDetailCommand { get; }
+    public AsyncRelayCommand ApplyCommand { get; }
+    public RelayCommand ToggleFavoriteCommand { get; }
+    public RelayCommand ToggleBlockedCommand { get; }
 
     public void Refresh()
     {
@@ -161,6 +186,58 @@ public sealed class HistoryViewModel : ViewModelBase
         {
             StatusMessage = $"Failed to copy image: {ex.Message}";
         }
+    }
+
+    private bool CanOperateSelected()
+    {
+        return _selectedEntry is not null && !string.IsNullOrWhiteSpace(_selectedEntry.Key);
+    }
+
+    private async Task ApplySelectedAsync()
+    {
+        if (_selectedEntry is null || string.IsNullOrWhiteSpace(_selectedEntry.Key))
+        {
+            StatusMessage = "No card selected.";
+            return;
+        }
+
+        var card = _catalogService.Current
+            .FirstOrDefault(item => string.Equals(item.Id, _selectedEntry.Key, StringComparison.Ordinal));
+        if (card is null)
+        {
+            StatusMessage = "Card not found in catalog. Please fetch cards first.";
+            return;
+        }
+
+        var settings = _settingsProvider();
+        var result = await _wallpaperUseCase.ApplyCardAsync(card, settings, CancellationToken.None, "history");
+        StatusMessage = result.Message;
+    }
+
+    private void ToggleFavorite()
+    {
+        if (_selectedEntry is null || string.IsNullOrWhiteSpace(_selectedEntry.Key))
+        {
+            StatusMessage = "No card selected.";
+            return;
+        }
+
+        _favoritesStore.ToggleFavorite(_selectedEntry.Key);
+        var isFavorite = _favoritesStore.IsFavorite(_selectedEntry.Key);
+        StatusMessage = isFavorite ? "Marked as favorite." : "Removed from favorites.";
+    }
+
+    private void ToggleBlocked()
+    {
+        if (_selectedEntry is null || string.IsNullOrWhiteSpace(_selectedEntry.Key))
+        {
+            StatusMessage = "No card selected.";
+            return;
+        }
+
+        _favoritesStore.ToggleBlocked(_selectedEntry.Key);
+        var isBlocked = _favoritesStore.IsBlocked(_selectedEntry.Key);
+        StatusMessage = isBlocked ? "Marked as blocked." : "Removed from blocked.";
     }
 
     private void UpdateSelectedImage()
