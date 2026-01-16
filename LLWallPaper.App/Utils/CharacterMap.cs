@@ -30,4 +30,14 @@ public static class CharacterMap
         var prefix = cardId[..4];
         return Map.TryGetValue(prefix, out var name) ? name : "その他";
     }
+
+    public static bool IsSrCard(string? cardId)
+    {
+        if (string.IsNullOrWhiteSpace(cardId) || cardId.Length < 6)
+        {
+            return false;
+        }
+
+        return cardId[4..6] == "30";
+    }
 }

@@ -199,6 +199,7 @@
               <RowDefinition Height="Auto" />
               <RowDefinition Height="Auto" />
               <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
               <ColumnDefinition Width="220" />
@@ -312,45 +313,53 @@
 
             <TextBlock
               Grid.Row="11"
+              Grid.Column="0"
+              Text="Exclude SR cards"
+              VerticalAlignment="Center"
+            />
+            <CheckBox Grid.Row="11" Grid.Column="1" IsChecked="{Binding Settings.ExcludeSrCards}" />
+
+            <TextBlock
+              Grid.Row="12"
               Grid.ColumnSpan="2"
               Text="Startup"
               FontWeight="SemiBold"
               Margin="0,16,0,8"
             />
             <TextBlock
-              Grid.Row="12"
+              Grid.Row="13"
               Grid.Column="0"
               Text="Start with Windows"
               VerticalAlignment="Center"
             />
             <CheckBox
-              Grid.Row="12"
+              Grid.Row="13"
               Grid.Column="1"
               IsChecked="{Binding Settings.StartWithWindows}"
             />
             <TextBlock
-              Grid.Row="13"
+              Grid.Row="14"
               Grid.Column="0"
               Text="Start minimized"
               VerticalAlignment="Center"
             />
-            <CheckBox Grid.Row="13" Grid.Column="1" IsChecked="{Binding Settings.StartMinimized}" />
+            <CheckBox Grid.Row="14" Grid.Column="1" IsChecked="{Binding Settings.StartMinimized}" />
 
             <TextBlock
-              Grid.Row="14"
+              Grid.Row="15"
               Grid.ColumnSpan="2"
               Text="Cache"
               FontWeight="SemiBold"
               Margin="0,16,0,8"
             />
             <TextBlock
-              Grid.Row="15"
+              Grid.Row="16"
               Grid.Column="0"
               Text="Cache Max (MB)"
               VerticalAlignment="Center"
             />
             <TextBox
-              Grid.Row="15"
+              Grid.Row="16"
               Grid.Column="1"
               Width="160"
               HorizontalAlignment="Left"
@@ -358,20 +367,20 @@
             />
 
             <TextBlock
-              Grid.Row="16"
+              Grid.Row="17"
               Grid.ColumnSpan="2"
               Text="History"
               FontWeight="SemiBold"
               Margin="0,16,0,8"
             />
             <TextBlock
-              Grid.Row="17"
+              Grid.Row="18"
               Grid.Column="0"
               Text="History Max Entries"
               VerticalAlignment="Center"
             />
             <TextBox
-              Grid.Row="17"
+              Grid.Row="18"
               Grid.Column="1"
               Width="160"
               HorizontalAlignment="Left"
@@ -379,7 +388,7 @@
             />
 
             <Button
-              Grid.Row="18"
+              Grid.Row="19"
               Grid.Column="1"
               Content="Save Settings"
               Width="140"

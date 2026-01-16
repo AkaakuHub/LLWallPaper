@@ -188,6 +188,10 @@ public sealed class CardListViewModel : ViewModelBase
         {
             cards = cards.Where(card => !card.Id.EndsWith("2", StringComparison.Ordinal)).ToList();
         }
+        if (settings.ExcludeSrCards)
+        {
+            cards = cards.Where(card => !CharacterMap.IsSrCard(card.Id)).ToList();
+        }
         Items.Clear();
         foreach (var card in cards)
         {

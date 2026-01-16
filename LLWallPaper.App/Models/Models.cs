@@ -37,6 +37,9 @@ public sealed class Settings
     [JsonPropertyName("excludeThirdEvolution")]
     public bool ExcludeThirdEvolution { get; set; } = false;
 
+    [JsonPropertyName("excludeSrCards")]
+    public bool ExcludeSrCards { get; set; } = true;
+
     [JsonPropertyName("startWithWindows")]
     public bool StartWithWindows { get; set; } = false;
 

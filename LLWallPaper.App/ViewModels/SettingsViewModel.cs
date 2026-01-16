@@ -133,6 +133,19 @@ public sealed class SettingsViewModel : ViewModelBase
         }
     }
 
+    public bool ExcludeSrCards
+    {
+        get => _settings.ExcludeSrCards;
+        set
+        {
+            if (_settings.ExcludeSrCards != value)
+            {
+                _settings.ExcludeSrCards = value;
+                RaisePropertyChanged();
+            }
+        }
+    }
+
     public bool StartWithWindows
     {
         get => _settings.StartWithWindows;

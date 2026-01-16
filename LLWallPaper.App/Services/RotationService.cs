@@ -1,4 +1,5 @@
 using LLWallPaper.App.Models;
+using LLWallPaper.App.Utils;
 
 namespace LLWallPaper.App.Services;
 
@@ -13,7 +14,8 @@ public sealed class RotationService
         IReadOnlyCollection<string> blockedKeys,
         bool preferFavorites,
         bool excludeBlocked,
-        bool excludeThirdEvolution
+        bool excludeThirdEvolution,
+        bool excludeSrCards
     )
     {
         IEnumerable<CardItem> pool = candidates;
@@ -25,6 +27,11 @@ public sealed class RotationService
         if (excludeThirdEvolution)
         {
             pool = pool.Where(card => !card.Id.EndsWith("2", StringComparison.Ordinal));
+        }
+
+        if (excludeSrCards)
+        {
+            pool = pool.Where(card => !CharacterMap.IsSrCard(card.Id));
         }
 
         if (recentKeys.Count > 0)

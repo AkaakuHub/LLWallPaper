@@ -54,7 +54,8 @@ public sealed class WallpaperUseCase
             _favoritesStore.BlockedKeys,
             settings.PreferFavorites,
             settings.ExcludeBlocked,
-            settings.ExcludeThirdEvolution
+            settings.ExcludeThirdEvolution,
+            settings.ExcludeSrCards
         );
 
         if (card is null)
