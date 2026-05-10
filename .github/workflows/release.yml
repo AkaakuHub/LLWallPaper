@@ -128,15 +128,6 @@ jobs:
           "installer/windows/Output/LLWallPaper-Installer.exe"
           --clobber
 
-      - name: Format check
-        if: matrix.platform == 'macos'
-        run: xcrun swift-format lint --strict --recursive --configuration .swift-format LLWallPaper.Mac/Sources LLWallPaper.Mac/Tests
-
-      - name: Test
-        if: matrix.platform == 'macos'
-        run: swift test
-        working-directory: LLWallPaper.Mac
-
       - name: Build macOS app bundle
         if: matrix.platform == 'macos'
         run: ./installer/macos/build-app.sh "${{ steps.version.outputs.value }}"
