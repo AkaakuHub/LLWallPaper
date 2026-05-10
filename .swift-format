@@ -1,0 +1,20 @@
+{
+  "indentation" : {
+    "spaces" : 2
+  },
+  "lineLength" : 100,
+  "maximumBlankLines" : 1,
+  "respectsExistingLineBreaks" : true,
+  "rules" : {
+    "AllPublicDeclarationsHaveDocumentation" : false,
+    "AlwaysUseLowerCamelCase" : true,
+    "DoNotUseSemicolons" : true,
+    "IdentifiersMustBeASCII" : true,
+    "NeverForceUnwrap" : false,
+    "NeverUseForceTry" : false,
+    "NoBlockComments" : true,
+    "OrderedImports" : true,
+    "UseEarlyExits" : false
+  },
+  "version" : 1
+}
