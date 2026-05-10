@@ -15,105 +15,24 @@ permissions:
   contents: write
 
 jobs:
-  build-windows:
-    name: Build (exe) on Windows
-    runs-on: windows-2022
+  build:
+    name: Build (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows
+            os: windows-2022
+            platform: windows
+          - name: macOS
+            os: macos-26
+            platform: macos
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Extract version from tag
-        id: version
-        shell: pwsh
-        run: |
-          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
-            $version = "${{ inputs.version }}"
-          } else {
-            $tag = "${{ github.ref_name }}"
-            $version = $tag.TrimStart('v')
-          }
-          "value=$version" >> $Env:GITHUB_OUTPUT
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "10.0.x"
-
-      - name: Restore
-        run: dotnet restore LLWallPaper.sln
-
-      - name: Publish (framework-dependent)
-        run: >-
-          dotnet publish .\LLWallPaper.App\LLWallPaper.App.csproj
-          -c Release
-          -r win-x64
-          --self-contained false
-          -p:DebugType=none
-          -p:DebugSymbols=false
-          -p:Version=${{ steps.version.outputs.value }}
-          -o publish
-
-      - name: Remove PDBs
-        shell: pwsh
-        run: |
-          $publish = 'publish'
-          Get-ChildItem -Path $publish -Filter *.pdb -Recurse | Remove-Item -Force
-
-      - name: Install Velopack CLI
-        run: dotnet tool install -g vpk --version 0.0.1298
-
-      - name: Download previous releases (for delta)
-        shell: pwsh
-        run: >-
-          vpk download github
-          --repoUrl https://github.com/${{ github.repository }}
-          --token ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Pack Velopack release
-        shell: pwsh
-        run: >-
-          vpk pack
-          --packId LLWallPaper
-          --packVersion ${{ steps.version.outputs.value }}
-          --packDir publish
-          --mainExe LLWallPaper.App.exe
-
-      - name: Upload Velopack release to GitHub
-        shell: pwsh
-        run: >-
-          vpk upload github
-          --repoUrl https://github.com/${{ github.repository }}
-          --token ${{ secrets.GITHUB_TOKEN }}
-          --publish
-          --releaseName "v${{ steps.version.outputs.value }}"
-          --tag v${{ steps.version.outputs.value }}
-
-      - name: Install Inno Setup
-        run: choco install innosetup --no-progress -y
-
-      - name: Build Windows installer
-        shell: pwsh
-        run: |
-          $env:LLWALLPAPER_VERSION = "${{ steps.version.outputs.value }}"
-          .\installer\windows\build-installer.ps1
-
-      - name: Upload Windows installer to GitHub Release
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: >-
-          gh release upload
-          "v${{ steps.version.outputs.value }}"
-          "installer/windows/Output/LLWallPaper-Installer.exe"
-          --clobber
-
-  build-macos:
-    name: Build (app) on macOS
-    needs: build-windows
-    runs-on: macos-26
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Extract version from tag
+      - name: Extract version
         id: version
         shell: bash
         run: |
@@ -125,17 +44,120 @@ jobs:
           fi
           echo "value=$version" >> "$GITHUB_OUTPUT"
 
+      - name: Setup .NET
+        if: matrix.platform == 'windows'
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Restore
+        if: matrix.platform == 'windows'
+        run: dotnet restore LLWallPaper.sln
+
+      - name: Publish (framework-dependent)
+        if: matrix.platform == 'windows'
+        run: >-
+          dotnet publish .\LLWallPaper.App\LLWallPaper.App.csproj
+          -c Release
+          -r win-x64
+          --self-contained false
+          -p:DebugType=none
+          -p:DebugSymbols=false
+          -p:Version=${{ steps.version.outputs.value }}
+          -o publish
+
+      - name: Remove PDBs
+        if: matrix.platform == 'windows'
+        shell: pwsh
+        run: |
+          $publish = 'publish'
+          Get-ChildItem -Path $publish -Filter *.pdb -Recurse | Remove-Item -Force
+
+      - name: Install Velopack CLI
+        if: matrix.platform == 'windows'
+        run: dotnet tool install -g vpk --version 0.0.1298
+
+      - name: Download previous releases (for delta)
+        if: matrix.platform == 'windows'
+        shell: pwsh
+        run: >-
+          vpk download github
+          --repoUrl https://github.com/${{ github.repository }}
+          --token ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pack Velopack release
+        if: matrix.platform == 'windows'
+        shell: pwsh
+        run: >-
+          vpk pack
+          --packId LLWallPaper
+          --packVersion ${{ steps.version.outputs.value }}
+          --packDir publish
+          --mainExe LLWallPaper.App.exe
+
+      - name: Upload Velopack release to GitHub
+        if: matrix.platform == 'windows'
+        shell: pwsh
+        run: >-
+          vpk upload github
+          --repoUrl https://github.com/${{ github.repository }}
+          --token ${{ secrets.GITHUB_TOKEN }}
+          --publish
+          --releaseName "v${{ steps.version.outputs.value }}"
+          --tag v${{ steps.version.outputs.value }}
+
+      - name: Install Inno Setup
+        if: matrix.platform == 'windows'
+        run: choco install innosetup --no-progress -y
+
+      - name: Build Windows installer
+        if: matrix.platform == 'windows'
+        shell: pwsh
+        run: |
+          $env:LLWALLPAPER_VERSION = "${{ steps.version.outputs.value }}"
+          .\installer\windows\build-installer.ps1
+
+      - name: Upload Windows installer to GitHub Release
+        if: matrix.platform == 'windows'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >-
+          gh release upload
+          "v${{ steps.version.outputs.value }}"
+          "installer/windows/Output/LLWallPaper-Installer.exe"
+          --clobber
+
       - name: Format check
+        if: matrix.platform == 'macos'
         run: xcrun swift-format lint --strict --recursive --configuration .swift-format LLWallPaper.Mac/Sources LLWallPaper.Mac/Tests
 
       - name: Test
+        if: matrix.platform == 'macos'
         run: swift test
         working-directory: LLWallPaper.Mac
 
       - name: Build macOS app bundle
+        if: matrix.platform == 'macos'
         run: ./installer/macos/build-app.sh "${{ steps.version.outputs.value }}"
 
+      - name: Wait for GitHub Release
+        if: matrix.platform == 'macos'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          release_tag="v${{ steps.version.outputs.value }}"
+          for _ in {1..60}; do
+            if gh release view "$release_tag" >/dev/null 2>&1; then
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "GitHub Release $release_tag was not created by the Windows release job." >&2
+          exit 1
+
       - name: Upload macOS artifact to GitHub Release
+        if: matrix.platform == 'macos'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-

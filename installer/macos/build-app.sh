@@ -13,6 +13,7 @@ CONTENTS_DIR="$APP_DIR/Contents"
 MACOS_DIR="$CONTENTS_DIR/MacOS"
 RESOURCES_DIR="$CONTENTS_DIR/Resources"
 EXECUTABLE_PATH="$MACOS_DIR/LLWallPaperMac"
+ICON_PATH="$ROOT_DIR/installer/macos/icon/LLWallPaper.icns"
 DMG_STAGING_DIR="$(mktemp -d "${TMPDIR:-/tmp}/llwallpaper-dmg.XXXXXX")"
 DMG_PATH="$ROOT_DIR/dist/LLWallPaper-macOS-$VERSION.dmg"
 trap 'rm -rf "$DMG_STAGING_DIR"' EXIT
@@ -34,6 +35,7 @@ if [[ -z "$BUILT_EXECUTABLE" ]]; then
 fi
 
 cp "$BUILT_EXECUTABLE" "$EXECUTABLE_PATH"
+cp "$ICON_PATH" "$RESOURCES_DIR/LLWallPaper.icns"
 
 cat > "$CONTENTS_DIR/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
@@ -46,6 +48,8 @@ cat > "$CONTENTS_DIR/Info.plist" <<PLIST
   <string>LLWallPaper</string>
   <key>CFBundleExecutable</key>
   <string>LLWallPaperMac</string>
+  <key>CFBundleIconFile</key>
+  <string>LLWallPaper.icns</string>
   <key>CFBundleIdentifier</key>
   <string>dev.akaaku.LLWallPaper</string>
   <key>CFBundleInfoDictionaryVersion</key>
