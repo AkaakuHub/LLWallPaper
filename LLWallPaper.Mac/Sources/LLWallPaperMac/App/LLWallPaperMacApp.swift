@@ -3,6 +3,7 @@ import SwiftUI
 
 @main
 struct LLWallPaperMacApp: App {
+  @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
   @StateObject private var viewModel = AppViewModel()
   @Environment(\.openWindow) private var openWindow
 
@@ -29,7 +30,7 @@ struct LLWallPaperMacApp: App {
       }
     }
 
-    MenuBarExtra("LLWallPaper", systemImage: "photo.on.rectangle.angled") {
+    MenuBarExtra {
       Text("Current: \(viewModel.currentCardName) / \(viewModel.currentCharacterName)")
       Divider()
       Button("Open") {
@@ -47,6 +48,8 @@ struct LLWallPaperMacApp: App {
       Button("Quit") {
         NSApplication.shared.terminate(nil)
       }
+    } label: {
+      Image(nsImage: MenuBarIcon.image)
     }
   }
 

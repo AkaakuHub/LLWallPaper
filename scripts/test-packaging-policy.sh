@@ -23,6 +23,15 @@ assert_not_contains() {
   fi
 }
 
+assert_file_exists() {
+  local path="$1"
+
+  if [[ ! -f "$ROOT_DIR/$path" ]]; then
+    echo "$path does not exist" >&2
+    exit 1
+  fi
+}
+
 assert_contains ".github/workflows/release.yml" "--self-contained false"
 assert_not_contains ".github/workflows/release.yml" "--self-contained true"
 assert_contains ".github/workflows/release.yml" "matrix:"
@@ -39,6 +48,13 @@ assert_contains ".github/workflows/release.yml" "gh release upload"
 assert_contains ".github/workflows/release.yml" "Wait for GitHub Release"
 assert_contains "installer/macos/build-app.sh" "ln -s /Applications"
 assert_contains "installer/macos/build-app.sh" "LLWallPaper.icns"
+assert_contains "installer/macos/build-app.sh" "LLWallPaperMenuBar.png"
+assert_contains "installer/macos/build-app.sh" "LSUIElement"
+assert_contains "LLWallPaper.Mac/Package.swift" ".process(\"Resources\")"
+assert_contains "LLWallPaper.Mac/Sources/LLWallPaperMac/App/LLWallPaperMacApp.swift" "MenuBarExtra"
+assert_contains "LLWallPaper.Mac/Sources/LLWallPaperMac/App/MenuBarIcon.swift" "LLWallPaperMenuBar"
+assert_contains "LLWallPaper.Mac/Sources/LLWallPaperMac/App/AppDelegate.swift" "applicationShouldTerminateAfterLastWindowClosed"
+assert_file_exists "LLWallPaper.Mac/Sources/LLWallPaperMac/Resources/LLWallPaperMenuBar.png"
 assert_contains "installer/README.md" "ad-hoc signed"
 assert_contains "README.md" "The Windows installer does not bundle .NET Desktop Runtime 10 x64."
 assert_contains "installer/README.md" "The installer does not bundle .NET Desktop Runtime 10 x64."

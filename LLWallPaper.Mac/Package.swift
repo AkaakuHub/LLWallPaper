@@ -19,7 +19,10 @@ let package = Package(
         .executableTarget(
             name: "LLWallPaperMac",
             dependencies: ["LLWallPaperMacCore"],
-            path: "Sources/LLWallPaperMac"
+            path: "Sources/LLWallPaperMac",
+            resources: [
+                .process("Resources"),
+            ]
         ),
         .testTarget(
             name: "LLWallPaperMacTests",

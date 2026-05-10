@@ -14,6 +14,7 @@ MACOS_DIR="$CONTENTS_DIR/MacOS"
 RESOURCES_DIR="$CONTENTS_DIR/Resources"
 EXECUTABLE_PATH="$MACOS_DIR/LLWallPaperMac"
 ICON_PATH="$ROOT_DIR/installer/macos/icon/LLWallPaper.icns"
+MENU_BAR_ICON_PATH="$ROOT_DIR/LLWallPaper.Mac/Sources/LLWallPaperMac/Resources/LLWallPaperMenuBar.png"
 DMG_STAGING_DIR="$(mktemp -d "${TMPDIR:-/tmp}/llwallpaper-dmg.XXXXXX")"
 DMG_PATH="$ROOT_DIR/dist/LLWallPaper-macOS-$VERSION.dmg"
 trap 'rm -rf "$DMG_STAGING_DIR"' EXIT
@@ -36,6 +37,10 @@ fi
 
 cp "$BUILT_EXECUTABLE" "$EXECUTABLE_PATH"
 cp "$ICON_PATH" "$RESOURCES_DIR/LLWallPaper.icns"
+cp "$MENU_BAR_ICON_PATH" "$RESOURCES_DIR/LLWallPaperMenuBar.png"
+
+PRODUCT_DIR="$(dirname "$BUILT_EXECUTABLE")"
+find "$PRODUCT_DIR" -maxdepth 1 -type d -name "*.bundle" -exec cp -R {} "$RESOURCES_DIR/" \;
 
 cat > "$CONTENTS_DIR/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
@@ -64,6 +69,8 @@ cat > "$CONTENTS_DIR/Info.plist" <<PLIST
   <string>$VERSION</string>
   <key>LSMinimumSystemVersion</key>
   <string>13.0</string>
+  <key>LSUIElement</key>
+  <true/>
   <key>NSHighResolutionCapable</key>
   <true/>
   <key>NSSupportsAutomaticTermination</key>
