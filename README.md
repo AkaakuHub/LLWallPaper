@@ -40,6 +40,13 @@ macOS installer:
 ./installer/macos/build-app.sh 1.0.0
 ```
 
+macOS install:
+Download `LLWallPaper-macOS-x.y.z.dmg` from GitHub Releases, open it, and drag `LLWallPaper.app` to `Applications`.
+If macOS says the app is damaged, run:
+```
+xattr -rc /Applications/LLWallPaper.app
+```
+
 Windows installer:
 ```
 powershell -ExecutionPolicy Bypass -File .\installer\windows\build-installer.ps1

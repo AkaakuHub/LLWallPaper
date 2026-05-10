@@ -12,10 +12,10 @@ powershell -ExecutionPolicy Bypass -File .\installer\windows\build-installer.ps1
 ## macOS
 
 macOS uses the native Swift app bundle script in `installer/macos/build-app.sh`.
-When `MACOS_CODESIGN_IDENTITY` is unset, the app bundle is ad-hoc signed. This repository creates a DMG and does not notarize it.
+When `MACOS_CODESIGN_IDENTITY` is unset, the app bundle is ad-hoc signed.
 
 ```
 ./installer/macos/build-app.sh 1.0.0
 ```
 
-The script creates `dist/LLWallPaper-macOS-1.0.0.dmg`.
+The script creates `dist/LLWallPaper-macOS-1.0.0.dmg`. The DMG contains `LLWallPaper.app` and an `Applications` symlink.

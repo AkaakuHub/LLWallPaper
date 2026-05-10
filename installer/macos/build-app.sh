@@ -13,8 +13,9 @@ CONTENTS_DIR="$APP_DIR/Contents"
 MACOS_DIR="$CONTENTS_DIR/MacOS"
 RESOURCES_DIR="$CONTENTS_DIR/Resources"
 EXECUTABLE_PATH="$MACOS_DIR/LLWallPaperMac"
-DMG_STAGING_DIR="$DIST_DIR/dmg"
+DMG_STAGING_DIR="$(mktemp -d "${TMPDIR:-/tmp}/llwallpaper-dmg.XXXXXX")"
 DMG_PATH="$ROOT_DIR/dist/LLWallPaper-macOS-$VERSION.dmg"
+trap 'rm -rf "$DMG_STAGING_DIR"' EXIT
 
 rm -rf "$DIST_DIR" "$DMG_PATH"
 mkdir -p "$MACOS_DIR" "$RESOURCES_DIR"
@@ -68,12 +69,13 @@ cat > "$CONTENTS_DIR/Info.plist" <<PLIST
 PLIST
 
 if [[ -n "${MACOS_CODESIGN_IDENTITY:-}" ]]; then
-  codesign --force --deep --options runtime --sign "$MACOS_CODESIGN_IDENTITY" "$APP_DIR"
+  codesign --force --deep --options runtime --timestamp --sign "$MACOS_CODESIGN_IDENTITY" "$APP_DIR"
 else
   codesign --force --deep --sign - "$APP_DIR"
 fi
 
 mkdir -p "$DMG_STAGING_DIR"
 cp -R "$APP_DIR" "$DMG_STAGING_DIR/"
+ln -s /Applications "$DMG_STAGING_DIR/Applications"
 hdiutil create -volname "LLWallPaper" -srcfolder "$DMG_STAGING_DIR" -ov -format UDZO "$DMG_PATH"
 echo "$DMG_PATH"
