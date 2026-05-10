@@ -4,6 +4,19 @@ import SwiftUI
 struct HistoryView: View {
   @ObservedObject var viewModel: AppViewModel
 
+  private var selectedHistoryEntryId: Binding<HistoryEntry.ID?> {
+    Binding(
+      get: {
+        viewModel.selectedHistoryEntry?.id
+      },
+      set: { selectedId in
+        viewModel.selectedHistoryEntry = selectedId.flatMap { id in
+          viewModel.historyItems.first { $0.id == id }
+        }
+      }
+    )
+  }
+
   var body: some View {
     VStack(spacing: 10) {
       HStack {
@@ -24,14 +37,27 @@ struct HistoryView: View {
       }
 
       HStack(alignment: .top, spacing: 16) {
-        List(selection: $viewModel.selectedHistoryEntry) {
-          HistoryHeaderRow()
-          ForEach(viewModel.historyItems) { entry in
-            HistoryRow(entry: entry)
-              .tag(entry as HistoryEntry?)
+        Table(viewModel.historyItems, selection: selectedHistoryEntryId) {
+          TableColumn("At") { entry in
+            Text(entry.at.formatted(date: .numeric, time: .standard))
           }
+          .width(min: 150, ideal: 170)
+
+          TableColumn("Key") { entry in
+            Text(entry.key)
+          }
+          .width(min: 80, ideal: 90)
+
+          TableColumn("Character") { entry in
+            Text(entry.characterName)
+          }
+          .width(min: 120, ideal: 150)
+
+          TableColumn("Card") { entry in
+            Text(entry.cardName)
+          }
+          .width(min: 220, ideal: 360)
         }
-        .listStyle(.inset)
         .frame(minWidth: 460)
 
         VStack(spacing: 12) {
@@ -90,38 +116,6 @@ struct HistoryView: View {
       }
     }
     .padding(12)
-  }
-}
-
-private struct HistoryHeaderRow: View {
-  var body: some View {
-    HStack {
-      Text("At").frame(width: 150, alignment: .leading)
-      Text("Key").frame(width: 80, alignment: .leading)
-      Text("Character").frame(width: 130, alignment: .leading)
-      Text("Card").frame(width: 140, alignment: .leading)
-    }
-    .font(.caption)
-    .fontWeight(.semibold)
-    .foregroundStyle(.secondary)
-  }
-}
-
-private struct HistoryRow: View {
-  let entry: HistoryEntry
-
-  var body: some View {
-    HStack {
-      Text(entry.at.formatted(date: .numeric, time: .standard))
-        .frame(width: 150, alignment: .leading)
-      Text(entry.key)
-        .frame(width: 80, alignment: .leading)
-      Text(entry.characterName)
-        .frame(width: 130, alignment: .leading)
-      Text(entry.cardName)
-        .frame(width: 140, alignment: .leading)
-    }
-    .lineLimit(1)
   }
 }
 
