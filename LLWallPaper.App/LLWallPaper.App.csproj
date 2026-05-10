@@ -6,7 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <UseWPF>true</UseWPF>
         <UseWindowsForms>true</UseWindowsForms>
-        <ApplicationIcon>..\installer\icon\llwallpaper.ico</ApplicationIcon>
+        <ApplicationIcon>..\installer\windows\icon\llwallpaper.ico</ApplicationIcon>
         <StartupObject>LLWallPaper.App.App</StartupObject>
     </PropertyGroup>
 

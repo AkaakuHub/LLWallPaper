@@ -1,7 +1,11 @@
+#ifndef AppVersion
+#define AppVersion "0.0.0-local"
+#endif
+
 [Setup]
 AppId={{E6D5046F-0E08-4B9B-9C7E-34D6B3B97E52}
 AppName=LLWallPaper
-AppVersion=1.0.0
+AppVersion={#AppVersion}
 AppPublisher=AkaakuHub
 DefaultDirName={autopf}\LLWallPaper
 DefaultGroupName=LLWallPaper
@@ -14,7 +18,7 @@ SetupIconFile=icon\llwallpaper.ico
 UninstallDisplayIcon={app}\LLWallPaper.App.exe
 
 [Files]
-Source: "..\LLWallPaper.App\bin\Release\net10.0-windows\win-x64\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\..\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{autoprograms}\LLWallPaper"; Filename: "{app}\LLWallPaper.App.exe"

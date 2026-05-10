@@ -1,6 +1,9 @@
 # Build outputs
 bin/
 obj/
+dist/
+publish/
+installer/windows/Output/
 
 # Visual Studio
 .vs/
@@ -33,6 +36,10 @@ obj/
 
 # Test results
 TestResults/
+
+# SwiftPM
+.build/
+**/.build/
 
 # NuGet
 packages/
