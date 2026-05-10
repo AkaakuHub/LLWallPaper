@@ -14,7 +14,7 @@ if (-not (Test-Path $IsccPath)) {
 dotnet publish $ProjectPath `
     -c Release `
     -r win-x64 `
-    --self-contained true `
+    --self-contained false `
     -p:DebugType=none `
     -p:DebugSymbols=false `
     -p:Version=$Version `

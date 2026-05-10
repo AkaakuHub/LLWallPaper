@@ -41,12 +41,12 @@ jobs:
       - name: Restore
         run: dotnet restore LLWallPaper.sln
 
-      - name: Publish (self-contained)
+      - name: Publish (framework-dependent)
         run: >-
           dotnet publish .\LLWallPaper.App\LLWallPaper.App.csproj
           -c Release
           -r win-x64
-          --self-contained true
+          --self-contained false
           -p:DebugType=none
           -p:DebugSymbols=false
           -p:Version=${{ steps.version.outputs.value }}

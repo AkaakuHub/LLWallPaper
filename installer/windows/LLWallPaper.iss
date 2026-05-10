@@ -126,10 +126,7 @@ begin
   Result :=
     HasRuntimeAtLeast(HKLM64, 'SOFTWARE\dotnet\Setup\InstalledVersions\x64\sharedfx\Microsoft.WindowsDesktop.App', Required) or
     HasRuntimeAtLeast(HKLM64, 'SOFTWARE\WOW6432Node\dotnet\Setup\InstalledVersions\x64\sharedfx\Microsoft.WindowsDesktop.App', Required) or
-    HasRuntimeAtLeast(HKLM32, 'SOFTWARE\dotnet\Setup\InstalledVersions\x86\sharedfx\Microsoft.WindowsDesktop.App', Required) or
-    HasRuntimeAtLeast(HKLM32, 'SOFTWARE\WOW6432Node\dotnet\Setup\InstalledVersions\x86\sharedfx\Microsoft.WindowsDesktop.App', Required) or
-    HasRuntimeValueAtLeast(HKLM64, 'SOFTWARE\WOW6432Node\dotnet\Setup\InstalledVersions\x64\sharedfx\Microsoft.WindowsDesktop.App', Required) or
-    HasRuntimeValueAtLeast(HKLM32, 'SOFTWARE\WOW6432Node\dotnet\Setup\InstalledVersions\x86\sharedfx\Microsoft.WindowsDesktop.App', Required);
+    HasRuntimeValueAtLeast(HKLM64, 'SOFTWARE\WOW6432Node\dotnet\Setup\InstalledVersions\x64\sharedfx\Microsoft.WindowsDesktop.App', Required);
 end;
 
 function InitializeSetup(): Boolean;
@@ -143,7 +140,7 @@ begin
   else
   begin
     MsgBox(
-      '.NET Desktop Runtime 10 is required to run LLWallPaper.'#13#10 +
+      '.NET Desktop Runtime 10 x64 is required to run LLWallPaper.'#13#10 +
       'Please install it and then run this installer again.',
       mbInformation,
       MB_OK

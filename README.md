@@ -7,6 +7,7 @@ Now Compatible with llll-view.
 ### Windows
 - Windows 11
 - .NET SDK 10
+- .NET Desktop Runtime 10 x64
 
 ### macOS
 - macOS 13 or later
@@ -38,6 +39,7 @@ Windows installer:
 ```
 powershell -ExecutionPolicy Bypass -File .\installer\windows\build-installer.ps1
 ```
+The Windows installer does not bundle .NET Desktop Runtime 10 x64. If the runtime is missing, the installer opens the Microsoft download page.
 
 ## Formatter / Linter / Hooks
 Install lefthook with local tools:
