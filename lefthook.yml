@@ -2,12 +2,18 @@ lefthook: tools/lefthook/lefthook.exe
 
 pre-commit:
   jobs:
-    - name: csharpier
-      glob: "**/*.cs"
-      run: dotnet tool run csharpier -- format .
-      stage_fixed: true
+    - name: csharpier-check
+      glob: "**/*.{cs,csproj,xaml}"
+      run: dotnet tool run csharpier -- check {staged_files}
 
     - name: dotnet-lint
-      glob: "**/*.cs"
+      glob: "**/*.{cs,csproj,xaml}"
       run: dotnet build LLWallPaper.sln
-      stage_fixed: true
+
+    - name: swift-format-check
+      glob: "LLWallPaper.Mac/**/*.swift"
+      run: xcrun swift-format lint --strict --recursive --configuration .swift-format LLWallPaper.Mac/Sources LLWallPaper.Mac/Tests
+
+    - name: swift-test
+      glob: "LLWallPaper.Mac/**"
+      run: cd LLWallPaper.Mac && swift test

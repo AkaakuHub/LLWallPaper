@@ -1,0 +1,53 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  windows:
+    name: Windows
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Restore tools
+        run: dotnet tool restore
+
+      - name: Format check
+        run: dotnet tool run csharpier -- check .
+
+      - name: Build
+        run: dotnet build LLWallPaper.sln
+
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
+
+      - name: Build Windows installer
+        shell: pwsh
+        run: |
+          $env:LLWALLPAPER_VERSION = "0.0.0-ci"
+          .\installer\windows\build-installer.ps1
+
+  macos:
+    name: macOS
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Format check
+        run: xcrun swift-format lint --strict --recursive --configuration .swift-format LLWallPaper.Mac/Sources LLWallPaper.Mac/Tests
+
+      - name: Test
+        run: swift test
+        working-directory: LLWallPaper.Mac
+
+      - name: Build app bundle
+        run: ./installer/macos/build-app.sh 0.0.0-ci
