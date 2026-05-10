@@ -5,7 +5,9 @@ import SwiftUI
 struct LLWallPaperMacApp: App {
   @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
   @StateObject private var viewModel = AppViewModel()
+  @State private var didCheckForUpdates = false
   @Environment(\.openWindow) private var openWindow
+  private let startupUpdateController = StartupUpdateController()
 
   var body: some Scene {
     WindowGroup("LLWallPaper", id: "main") {
@@ -15,6 +17,10 @@ struct LLWallPaperMacApp: App {
           await viewModel.initialize()
           if viewModel.settings.startMinimized {
             NSApplication.shared.hide(nil)
+          }
+          if !didCheckForUpdates {
+            didCheckForUpdates = true
+            await startupUpdateController.checkForUpdatesOnStartup()
           }
         }
     }

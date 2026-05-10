@@ -1,6 +1,6 @@
 import Foundation
 
-public final class AppLogger {
+public final class AppLogger: @unchecked Sendable {
   public init() {}
 
   public func error(_ message: String, _ error: Error? = nil) {
