@@ -3,14 +3,19 @@
 Windows and macOS desktop wallpaper rotator for リンクラ card illustrations.
 Now Compatible with llll-view.
 
-## Requirements
+## Runtime Requirements
 ### Windows
 - Windows 11
-- .NET SDK 10
 - .NET Desktop Runtime 10 x64
 
 ### macOS
 - macOS 13 or later
+
+## Development Requirements
+### Windows
+- .NET SDK 10
+
+### macOS
 - Xcode 26 or Swift 6.2 toolchain
 
 ## Windows Development

@@ -21,6 +21,10 @@ jobs:
       - name: Restore tools
         run: dotnet tool restore
 
+      - name: Packaging policy check
+        shell: bash
+        run: ./scripts/test-packaging-policy.sh
+
       - name: Format check
         run: dotnet tool run csharpier -- check .
 

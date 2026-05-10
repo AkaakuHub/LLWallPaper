@@ -4,9 +4,10 @@ import SwiftUI
 @main
 struct LLWallPaperMacApp: App {
   @StateObject private var viewModel = AppViewModel()
+  @Environment(\.openWindow) private var openWindow
 
   var body: some Scene {
-    WindowGroup("LLWallPaper") {
+    WindowGroup("LLWallPaper", id: "main") {
       ContentView(viewModel: viewModel)
         .frame(minWidth: 920, minHeight: 620)
         .task {
@@ -27,5 +28,30 @@ struct LLWallPaperMacApp: App {
         .keyboardShortcut("n", modifiers: [.command])
       }
     }
+
+    MenuBarExtra("LLWallPaper", systemImage: "photo.on.rectangle.angled") {
+      Text("Current: \(viewModel.currentCardName) / \(viewModel.currentCharacterName)")
+      Divider()
+      Button("Open") {
+        openMainWindow()
+      }
+      Button("Next") {
+        Task {
+          await viewModel.applyNext()
+        }
+      }
+      Button(viewModel.isAutoEnabled ? "Pause" : "Resume") {
+        viewModel.toggleAuto()
+      }
+      Divider()
+      Button("Quit") {
+        NSApplication.shared.terminate(nil)
+      }
+    }
+  }
+
+  private func openMainWindow() {
+    openWindow(id: "main")
+    NSApplication.shared.activate(ignoringOtherApps: true)
   }
 }

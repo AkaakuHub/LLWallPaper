@@ -11,6 +11,10 @@ if (-not (Test-Path $IsccPath)) {
     throw "ISCC.exe was not found. Install Inno Setup 6 first."
 }
 
+if (Test-Path $PublishDir) {
+    Remove-Item -Path $PublishDir -Recurse -Force
+}
+
 dotnet publish $ProjectPath `
     -c Release `
     -r win-x64 `
