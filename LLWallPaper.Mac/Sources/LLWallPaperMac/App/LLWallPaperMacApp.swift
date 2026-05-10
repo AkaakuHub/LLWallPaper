@@ -5,7 +5,7 @@ import SwiftUI
 struct LLWallPaperMacApp: App {
   @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
   @StateObject private var viewModel = AppViewModel()
-  @State private var didCheckForUpdates = false
+  @State private var didRunStartup = false
   @Environment(\.openWindow) private var openWindow
   private let startupUpdateController = StartupUpdateController()
 
@@ -14,14 +14,16 @@ struct LLWallPaperMacApp: App {
       ContentView(viewModel: viewModel)
         .frame(minWidth: 920, minHeight: 620)
         .task {
+          if didRunStartup {
+            return
+          }
+          didRunStartup = true
+
           await viewModel.initialize()
           if viewModel.settings.startMinimized {
             NSApplication.shared.hide(nil)
           }
-          if !didCheckForUpdates {
-            didCheckForUpdates = true
-            await startupUpdateController.checkForUpdatesOnStartup()
-          }
+          await startupUpdateController.checkForUpdatesOnStartup()
         }
     }
     .windowResizability(.contentMinSize)

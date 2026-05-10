@@ -30,6 +30,7 @@ final class AppViewModel: ObservableObject {
   private let startupService = StartupService()
   private let imageClipboardService = ImageClipboardService()
   private let cardDetailLinkService: CardDetailLinkService
+  private var hasInitialized = false
   private var schedulerTask: Task<Void, Never>?
 
   init() {
@@ -120,6 +121,11 @@ final class AppViewModel: ObservableObject {
   }
 
   func initialize() async {
+    if hasInitialized {
+      return
+    }
+    hasInitialized = true
+
     favoritesStore.load()
     await fetchCardsWithRetry(initialDelaySeconds: 0)
     refreshHistory()
