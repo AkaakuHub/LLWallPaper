@@ -1,0 +1,147 @@
+{
+  "defaultSettings": {
+    "backendBaseUrl": "http://127.0.0.1:3000",
+    "autoRotateEnabled": true,
+    "rotateIntervalMinutes": 15,
+    "rotateOnAppStart": true,
+    "recentExcludeCount": 30,
+    "preferFavorites": true,
+    "excludeBlocked": true,
+    "excludeThirdEvolution": false,
+    "excludeSrCards": true,
+    "startWithOs": false,
+    "startMinimized": false,
+    "cacheMaxMb": 2048,
+    "historyMaxEntries": 100
+  },
+  "cards": [
+    {
+      "id": "102111",
+      "name": "Favorite",
+      "imageUrl": "http://127.0.0.1:3000/image/102111.webp"
+    },
+    {
+      "id": "102122",
+      "name": "Third Evolution",
+      "imageUrl": "http://127.0.0.1:3000/image/102122.webp"
+    },
+    {
+      "id": "102130",
+      "name": "SR",
+      "imageUrl": "http://127.0.0.1:3000/image/102130.webp"
+    },
+    {
+      "id": "102211",
+      "name": "Blocked",
+      "imageUrl": "http://127.0.0.1:3000/image/102211.webp"
+    }
+  ],
+  "searchCases": [
+    {
+      "name": "query matches id and excludes third evolution and sr",
+      "query": "1021",
+      "settings": {
+        "excludeThirdEvolution": true,
+        "excludeSrCards": true
+      },
+      "expectedIds": ["102111"]
+    },
+    {
+      "name": "query matches name",
+      "query": "Blocked",
+      "settings": {
+        "excludeThirdEvolution": false,
+        "excludeSrCards": false
+      },
+      "expectedIds": ["102211"]
+    }
+  ],
+  "rotationCases": [
+    {
+      "name": "favorite is preferred",
+      "settings": {
+        "preferFavorites": true,
+        "excludeBlocked": true,
+        "excludeThirdEvolution": true,
+        "excludeSrCards": true,
+        "recentExcludeCount": 0
+      },
+      "favoriteKeys": ["102111"],
+      "blockedKeys": ["102211"],
+      "recentKeys": [],
+      "expectedId": "102111"
+    },
+    {
+      "name": "recent cards are excluded",
+      "settings": {
+        "preferFavorites": false,
+        "excludeBlocked": true,
+        "excludeThirdEvolution": true,
+        "excludeSrCards": true,
+        "recentExcludeCount": 1
+      },
+      "favoriteKeys": [],
+      "blockedKeys": ["102211"],
+      "recentKeys": ["102111"],
+      "expectedId": null
+    }
+  ],
+  "backendCase": {
+    "baseUrl": "http://127.0.0.1:3000",
+    "json": {
+      "cards": [
+        {
+          "id": 102111,
+          "name": "Card Name",
+          "assets": {
+            "images": {
+              "full": true,
+              "half": true
+            }
+          }
+        },
+        {
+          "id": "102112",
+          "name": "No Full",
+          "assets": {
+            "images": {
+              "full": false
+            }
+          }
+        }
+      ]
+    },
+    "expectedCards": [
+      {
+        "id": "102111",
+        "name": "Card Name",
+        "imageUrl": "http://127.0.0.1:3000/api/card-illustrations/image/102111?type=full",
+        "thumbnailUrl": "http://127.0.0.1:3000/api/card-illustrations/image/102111?type=half"
+      }
+    ]
+  },
+  "characterCases": [
+    {
+      "cardId": "102199",
+      "expectedName": "乙宗梢"
+    },
+    {
+      "cardId": "999999",
+      "expectedName": "その他"
+    }
+  ],
+  "srCases": [
+    {
+      "cardId": "102130",
+      "expected": true
+    },
+    {
+      "cardId": "102131",
+      "expected": false
+    },
+    {
+      "cardId": "1021",
+      "expected": false
+    }
+  ]
+}

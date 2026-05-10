@@ -4,64 +4,52 @@ import XCTest
 @testable import LLWallPaperMacCore
 
 final class DomainTests: XCTestCase {
-  func testCharacterNameUsesFirstFourDigits() {
-    XCTAssertEqual(CharacterMap.name(for: "102199"), "乙宗梢")
-    XCTAssertEqual(CharacterMap.name(for: "999999"), "その他")
+  func testCharacterNameUsesSharedFixture() throws {
+    let fixture = try FeatureParityFixture.load()
+
+    for testCase in fixture.characterCases {
+      XCTAssertEqual(CharacterMap.name(for: testCase.cardId), testCase.expectedName)
+    }
   }
 
-  func testSrCardDetectionUsesFifthAndSixthDigits() {
-    XCTAssertTrue(CharacterMap.isSrCard("102130"))
-    XCTAssertFalse(CharacterMap.isSrCard("102131"))
-    XCTAssertFalse(CharacterMap.isSrCard("1021"))
+  func testSrCardDetectionUsesSharedFixture() throws {
+    let fixture = try FeatureParityFixture.load()
+
+    for testCase in fixture.srCases {
+      XCTAssertEqual(CharacterMap.isSrCard(testCase.cardId), testCase.expected)
+    }
   }
 
-  func testCardSearchFiltersByQueryAndRules() throws {
-    let settings = {
+  func testCardSearchMatchesSharedFixture() throws {
+    let fixture = try FeatureParityFixture.load()
+    let cards = fixture.cards.map(\.cardItem)
+
+    for testCase in fixture.searchCases {
       var settings = AppSettings()
-      settings.excludeThirdEvolution = true
-      settings.excludeSrCards = true
-      return settings
-    }()
-    let cards = [
-      try makeCard(id: "102111", name: "First"),
-      try makeCard(id: "102112", name: "Third Evolution"),
-      try makeCard(id: "102130", name: "SR"),
-    ]
+      settings.excludeThirdEvolution = testCase.settings.excludeThirdEvolution
+      settings.excludeSrCards = testCase.settings.excludeSrCards
 
-    let result = CardSearch.filter(cards: cards, query: "1021", settings: settings)
+      let result = CardSearch.filter(cards: cards, query: testCase.query, settings: settings)
 
-    XCTAssertEqual(result.map(\.id), ["102111"])
+      XCTAssertEqual(result.map(\.id), testCase.expectedIds, testCase.name)
+    }
   }
 
   @MainActor
-  func testBackendParserAcceptsRootCardsObject() throws {
-    let json = """
-      {
-        "cards": [
-          {
-            "id": 102111,
-            "name": "Card Name",
-            "assets": { "images": { "full": true, "half": true } }
-          },
-          {
-            "id": "102112",
-            "name": "No Full",
-            "assets": { "images": { "full": false } }
-          }
-        ]
-      }
-      """
+  func testBackendParserMatchesSharedFixture() throws {
+    let fixture = try FeatureParityFixture.load()
     let cards = try BackendApiClient.parseCards(
-      data: Data(json.utf8),
-      baseUrl: URL(string: "http://127.0.0.1:3000")!
+      data: try FeatureParityFixture.backendJsonData(),
+      baseUrl: fixture.backendCase.baseUrl
     )
 
-    XCTAssertEqual(cards.count, 1)
-    XCTAssertEqual(cards[0].id, "102111")
-    XCTAssertEqual(cards[0].name, "Card Name")
-    XCTAssertEqual(
-      cards[0].imageUrl.absoluteString,
-      "http://127.0.0.1:3000/api/card-illustrations/image/102111?type=full")
+    XCTAssertEqual(cards.count, fixture.backendCase.expectedCards.count)
+    for (card, expected) in zip(cards, fixture.backendCase.expectedCards) {
+      XCTAssertEqual(card.id, expected.id)
+      XCTAssertEqual(card.name, expected.name)
+      XCTAssertEqual(card.imageUrl, expected.imageUrl)
+      XCTAssertEqual(card.thumbnailUrl, expected.thumbnailUrl)
+    }
   }
 
   func testRotationReturnsNilWhenAllCandidatesAreBlocked() throws {

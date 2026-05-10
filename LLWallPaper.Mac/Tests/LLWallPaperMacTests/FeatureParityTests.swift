@@ -4,22 +4,23 @@ import XCTest
 @testable import LLWallPaperMacCore
 
 final class FeatureParityTests: XCTestCase {
-  func testDefaultSettingsMatchWindowsAppDefaults() {
+  func testDefaultSettingsMatchSharedFixture() throws {
+    let fixture = try FeatureParityFixture.load()
     let settings = AppSettings()
 
-    XCTAssertEqual(settings.backendBaseUrl, "http://127.0.0.1:3000")
-    XCTAssertTrue(settings.autoRotateEnabled)
-    XCTAssertEqual(settings.rotateIntervalMinutes, 15)
-    XCTAssertTrue(settings.rotateOnAppStart)
-    XCTAssertEqual(settings.recentExcludeCount, 30)
-    XCTAssertTrue(settings.preferFavorites)
-    XCTAssertTrue(settings.excludeBlocked)
-    XCTAssertFalse(settings.excludeThirdEvolution)
-    XCTAssertTrue(settings.excludeSrCards)
-    XCTAssertFalse(settings.startWithMacOS)
-    XCTAssertFalse(settings.startMinimized)
-    XCTAssertEqual(settings.cacheMaxMb, 2048)
-    XCTAssertEqual(settings.historyMaxEntries, 100)
+    XCTAssertEqual(settings.backendBaseUrl, fixture.defaultSettings.backendBaseUrl)
+    XCTAssertEqual(settings.autoRotateEnabled, fixture.defaultSettings.autoRotateEnabled)
+    XCTAssertEqual(settings.rotateIntervalMinutes, fixture.defaultSettings.rotateIntervalMinutes)
+    XCTAssertEqual(settings.rotateOnAppStart, fixture.defaultSettings.rotateOnAppStart)
+    XCTAssertEqual(settings.recentExcludeCount, fixture.defaultSettings.recentExcludeCount)
+    XCTAssertEqual(settings.preferFavorites, fixture.defaultSettings.preferFavorites)
+    XCTAssertEqual(settings.excludeBlocked, fixture.defaultSettings.excludeBlocked)
+    XCTAssertEqual(settings.excludeThirdEvolution, fixture.defaultSettings.excludeThirdEvolution)
+    XCTAssertEqual(settings.excludeSrCards, fixture.defaultSettings.excludeSrCards)
+    XCTAssertEqual(settings.startWithMacOS, fixture.defaultSettings.startWithOs)
+    XCTAssertEqual(settings.startMinimized, fixture.defaultSettings.startMinimized)
+    XCTAssertEqual(settings.cacheMaxMb, fixture.defaultSettings.cacheMaxMb)
+    XCTAssertEqual(settings.historyMaxEntries, fixture.defaultSettings.historyMaxEntries)
   }
 
   @MainActor
@@ -49,50 +50,27 @@ final class FeatureParityTests: XCTestCase {
   }
 
   @MainActor
-  func testApplyNextUsesSameRotationRulesAsWindowsApp() async throws {
-    var settings = AppSettings()
-    settings.excludeBlocked = true
-    settings.excludeThirdEvolution = true
-    settings.excludeSrCards = true
-    settings.preferFavorites = true
-    let favoriteCard = try makeCard(id: "102111", name: "Favorite")
-    let blockedCard = try makeCard(id: "102122", name: "Blocked Third Evolution")
-    let srCard = try makeCard(id: "102130", name: "SR")
-    let wallpaperSetter = StubWallpaperSetter()
-    let useCase = WallpaperUseCase(
-      catalogService: StubCatalog(cards: [blockedCard, srCard, favoriteCard]),
-      rotationService: RotationService(),
-      cacheStore: StubCacheStore(localUrl: URL(fileURLWithPath: "/tmp/favorite.webp")),
-      desktopWallpaperAdapter: wallpaperSetter,
-      favoritesStore: StubFavorites(favoriteKeys: ["102111"], blockedKeys: ["102122"]),
-      historyStore: StubHistoryStore(),
-      logger: AppLogger()
-    )
+  func testRotationMatchesSharedFixture() throws {
+    let fixture = try FeatureParityFixture.load()
+    let cards = fixture.cards.map(\.cardItem)
 
-    let result = await useCase.applyNext(settings: settings)
+    for testCase in fixture.rotationCases {
+      var settings = AppSettings()
+      settings.preferFavorites = testCase.settings.preferFavorites
+      settings.excludeBlocked = testCase.settings.excludeBlocked
+      settings.excludeThirdEvolution = testCase.settings.excludeThirdEvolution
+      settings.excludeSrCards = testCase.settings.excludeSrCards
 
-    XCTAssertEqual(result, WallpaperResult(success: true, message: "Wallpaper updated."))
-    XCTAssertEqual(wallpaperSetter.setUrls.map(\.lastPathComponent), ["favorite.webp"])
-  }
+      let card = RotationService().pickNext(
+        candidates: cards,
+        recentKeys: testCase.recentKeys,
+        favoriteKeys: testCase.favoriteKeys,
+        blockedKeys: testCase.blockedKeys,
+        settings: settings
+      )
 
-  @MainActor
-  func testApplyNextReportsNoEligibleCardsWhenFiltersRemoveEverything() async throws {
-    var settings = AppSettings()
-    settings.excludeBlocked = true
-    let blockedCard = try makeCard(id: "102111", name: "Blocked")
-    let useCase = WallpaperUseCase(
-      catalogService: StubCatalog(cards: [blockedCard]),
-      rotationService: RotationService(),
-      cacheStore: StubCacheStore(localUrl: URL(fileURLWithPath: "/tmp/unused.webp")),
-      desktopWallpaperAdapter: StubWallpaperSetter(),
-      favoritesStore: StubFavorites(blockedKeys: ["102111"]),
-      historyStore: StubHistoryStore(),
-      logger: AppLogger()
-    )
-
-    let result = await useCase.applyNext(settings: settings)
-
-    XCTAssertEqual(result, WallpaperResult(success: false, message: "No eligible cards."))
+      XCTAssertEqual(card?.id, testCase.expectedId, testCase.name)
+    }
   }
 
   private func makeCard(id: String, name: String) throws -> CardItem {
